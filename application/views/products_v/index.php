@@ -49,14 +49,6 @@
                                             </picture>
                                         </a>
                                     </div>
-                                    <div class="blog-meta d-flex flex-wrap pt-2 px-auto">
-                                        <div class="meta flex-fill text-center justify-content-center">
-                                            <small style="cursor: pointer;" data-toggle="tooltip" title="<?= $languageJSON["detailPages"]["publishDate"] ?>" data-title="<?= $languageJSON["detailPages"]["publishDate"] ?>" data-placement="top"><small><?= iconv("ISO-8859-9", "UTF-8", strftime("%d %B %Y, %A %X", strtotime($value->createdAt))) ?></small></small>
-                                        </div>
-                                        <div class="meta flex-fill text-center justify-content-center">
-                                            <small style="cursor: pointer;" data-toggle="tooltip" title="<?= $languageJSON["detailPages"]["lastUpdate"] ?>" data-title="<?= $languageJSON["detailPages"]["lastUpdate"] ?>" data-placement="top"><small><?= iconv("ISO-8859-9", "UTF-8", strftime("%d %B %Y, %A %X", strtotime($value->updatedAt))); ?></small></small>
-                                        </div>
-                                    </div>
                                     <h4 class="blog-title text-center"><a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $value->title->$lang ?></a></h4>
                                     <div class="blog-meta text-center">
                                         <div class="meta">
