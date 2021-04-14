@@ -105,7 +105,7 @@ class Galleries extends MY_Controller
                         die();
                     endif;
                     $path         = FCPATH . "uploads/$this->viewFolder/";
-                    $folder_name[$key] = seo($data["title"][$key]);
+                    $folder_name[$key] = seo($data["title"][$key] . "-" . time());
                     $path = "$path/$gallery_type/" . $folder_name[$key];
                     if (!@mkdir($path, 0755, true)) :
                         echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Oluşturulurken Hata Oluştu. Klasör Erişim Yetkinizin Olduğundan Emin Olup Tekrar Deneyin."]);
@@ -115,7 +115,7 @@ class Galleries extends MY_Controller
                     $image = upload_picture("img_url", "uploads/$this->viewFolder/$gallery_type/$folder_name[$key]", $key);
 
                     if ($image["success"]) :
-                        $url[$key] =  seo($data["title"][$key]);
+                        $url[$key] =  seo($data["title"][$key] . "-" . time());
                         $imgUrl[$key] = $image["file_name"];
                     else :
                         echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
@@ -180,11 +180,11 @@ class Galleries extends MY_Controller
             if (!empty($gallery)) :
                 foreach ($data["title"] as $key => $value) :
                     $data["img_url"][$key] = !empty($gallery->img_url->$key) ? $gallery->img_url->$key : null;
-                    $data["url"][$key] = !empty($gallery->url->$key) ? seo($gallery->url->$key) : seo($data["title"][$key]);
+                    $data["url"][$key] = !empty($gallery->url->$key) ? seo($gallery->url->$key . "-" . time()) : seo($data["title"][$key] . "-" . time());
                     $path         = FCPATH . "uploads/$this->viewFolder/";
-                    $oldFolderName[$key] = !empty($gallery->folder_name->$key) ? $gallery->folder_name->$key : seo($data["title"][$key]);
+                    $oldFolderName[$key] = !empty($gallery->folder_name->$key) ? $gallery->folder_name->$key : seo($data["title"][$key] . "-" . time());
 
-                    $folder_name[$key] = seo($data["title"][$key]);
+                    $folder_name[$key] = seo($data["title"][$key] . "-" . time());
                     $path = "$path/$gallery_type/";
                     if (!file_exists($path . $oldFolderName[$key])) :
                         if (!@mkdir($path . $oldFolderName[$key], 0755, true)) :
@@ -201,7 +201,7 @@ class Galleries extends MY_Controller
                     if (!empty($value)) :
                         $image = upload_picture("img_url", "uploads/$this->viewFolder/$gallery_type/$folder_name[$key]", $key);
                         if ($image["success"]) :
-                            $data["url"][$key] =  seo($data["title"][$key]);
+                            $data["url"][$key] =  seo($data["title"][$key] . "-" . time());
                             $data["img_url"][$key] = $image["file_name"];
                             if (!empty($gallery->img_url)) :
                                 foreach ((array)$gallery->img_url as $key => $value) :

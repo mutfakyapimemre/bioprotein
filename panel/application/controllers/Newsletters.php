@@ -52,12 +52,12 @@ class Newsletters extends MY_Controller
 
 
             //array_push($renkler,$renk->negotiation_stage_color);
-            $sharedAt = json_decode($item->sharedAt,true);
-            foreach($sharedAt as $key => $value){
+            $sharedAt = json_decode($item->sharedAt, true);
+            foreach ($sharedAt as $key => $value) {
                 $sharedAt[$key] = turkishDate("d F Y, l H:i:s", $value);
             }
             $checkbox = '<div class="custom-control custom-switch"><input data-id="' . $item->id . '" data-url="' . base_url("newsletters/isActiveSetter/{$item->id}") . '" data-status="' . ($item->isActive == 1 ? "checked" : null) . '" id="customSwitch' . $i . '" type="checkbox" ' . ($item->isActive == 1 ? "checked" : null) . ' class="my-check custom-control-input" >  <label class="custom-control-label" for="customSwitch' . $i . '"></label></div>';
-            $data[] = array($item->rank, '<i class="fa fa-arrows" data-id="' . $item->id . '"></i>', $item->id, $item->title, $checkbox, turkishDate("d F Y, l H:i:s", $item->createdAt), turkishDate("d F Y, l H:i:s", $item->updatedAt), json_encode($sharedAt,JSON_UNESCAPED_UNICODE), $proccessing);
+            $data[] = array($item->rank, '<i class="fa fa-arrows" data-id="' . $item->id . '"></i>', $item->id, $item->title, $checkbox, turkishDate("d F Y, l H:i:s", $item->createdAt), turkishDate("d F Y, l H:i:s", $item->updatedAt), json_encode($sharedAt, JSON_UNESCAPED_UNICODE), $proccessing);
         }
 
 
@@ -77,7 +77,7 @@ class Newsletters extends MY_Controller
         $viewData = new stdClass();
         $viewData->viewFolder = $this->viewFolder;
         $viewData->subViewFolder = "add";
-        $viewData->settings = $this->general_model->get_all("settings",null,null,["isActive" => 1]);
+        $viewData->settings = $this->general_model->get_all("settings", null, null, ["isActive" => 1]);
         $this->load->view("{$viewData->viewFolder}/{$viewData->subViewFolder}/content", $viewData);
     }
     public function save()
@@ -88,12 +88,12 @@ class Newsletters extends MY_Controller
             echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Bülteni Kaydı Yapılırken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);
         else :
             $getRank = $this->newsletter_model->rowCount();
-            foreach($_FILES["img_url"]["name"] as $key => $value):
+            foreach ($_FILES["img_url"]["name"] as $key => $value) :
                 if ($value == "") :
                     echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Bülteni Eklenirken Hata Oluştu. Haber Bülteni Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
                     die();
                 endif;
-                $image = upload_picture("img_url", "uploads/$this->viewFolder",$key);
+                $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
                 if ($image["success"]) :
                     $data["img_url"][$key] = $image["file_name"];
                 else :
@@ -101,8 +101,8 @@ class Newsletters extends MY_Controller
                     die();
                 endif;
             endforeach;
-            foreach($data["title"] as $key => $value):
-                $data["url"][$key] = seo($data["title"][$key]);
+            foreach ($data["title"] as $key => $value) :
+                $data["url"][$key] = seo($data["title"][$key] . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
             $data = makeJSON($data);
@@ -127,14 +127,14 @@ class Newsletters extends MY_Controller
         $viewData->viewFolder = $this->viewFolder;
         $viewData->subViewFolder = "update";
         $viewData->item = $item;
-        foreach( $viewData->item as $key =>$data){
-            if(isJson($data)):
-                $viewData->item->$key=json_decode($data);
-            else:
-                $viewData->item->$key=$data;
+        foreach ($viewData->item as $key => $data) {
+            if (isJson($data)) :
+                $viewData->item->$key = json_decode($data);
+            else :
+                $viewData->item->$key = $data;
             endif;
         }
-        $viewData->settings = $this->general_model->get_all("settings",null,null,["isActive" => 1]);
+        $viewData->settings = $this->general_model->get_all("settings", null, null, ["isActive" => 1]);
         $this->load->view("{$viewData->viewFolder}/{$viewData->subViewFolder}/content", $viewData);
     }
     public function update($id)
@@ -145,12 +145,12 @@ class Newsletters extends MY_Controller
             echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Bülteni Güncelleştirilirken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);
         else :
             $newsletter = $this->newsletter_model->get(["id" => $id]);
-            foreach(json_decode($newsletter->img_url,true) as $key => $value):
+            foreach (json_decode($newsletter->img_url, true) as $key => $value) :
                 $data["img_url"][$key] = $value;
             endforeach;
-            foreach($_FILES["img_url"]["name"] as $key => $value):
+            foreach ($_FILES["img_url"]["name"] as $key => $value) :
                 if (!empty($value)) :
-                    $image = upload_picture("img_url", "uploads/$this->viewFolder",$key);
+                    $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
                     if ($image["success"]) :
                         $data["img_url"][$key] = $image["file_name"];
                     else :
@@ -159,11 +159,11 @@ class Newsletters extends MY_Controller
                     endif;
                 endif;
             endforeach;
-            foreach($data["title"] as $key => $value):
-                $data["url"][$key] = seo($value);
+            foreach ($data["title"] as $key => $value) :
+                $data["url"][$key] = seo($value . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
-            
+
             $data = makeJSON($data);
             $update = $this->newsletter_model->update(["id" => $id], $data);
             if ($update) :

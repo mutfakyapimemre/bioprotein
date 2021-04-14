@@ -99,7 +99,7 @@ class Stories extends MY_Controller
                         die();
                     endif;
                     $path         = FCPATH . "uploads/$this->viewFolder/";
-                    $folder_name[$key] = seo($data["title"][$key]);
+                    $folder_name[$key] = seo($data["title"][$key] . "-" . time());
                     $path = "$path/" . $folder_name[$key];
                     if (!@mkdir($path, 0755, true)) :
                         echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Oluşturulurken Hata Oluştu. Klasör Erişim Yetkinizin Olduğundan Emin Olup Tekrar Deneyin."]);
@@ -175,7 +175,7 @@ class Stories extends MY_Controller
                     $path         = FCPATH . "uploads/$this->viewFolder/";
                     $oldFolderName[$key] = $story->folder_name->$key;
 
-                    $folder_name[$key] = seo($data["title"][$key]);
+                    $folder_name[$key] = seo($data["title"][$key] . "-" . time());
                     if (!rename($path . $oldFolderName[$key], $path . $folder_name[$key])) :
                         echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Güncellemesi Yapılırken Hata Oluştu. Klasör Erişim Yetkinizin Olduğundan Emin Olup Tekrar Deneyin."]);
                         die();

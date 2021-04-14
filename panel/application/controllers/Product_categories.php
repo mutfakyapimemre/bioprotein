@@ -87,7 +87,7 @@ class Product_categories extends MY_Controller
         else :
             $getRank = $this->product_category_model->rowCount();
             foreach ($data["title"] as $key => $value) :
-                $data["seo_url"][$key] = seo($value);
+                $data["seo_url"][$key] = seo($value . "-" . time());
             endforeach;
             if (!empty($_FILES)) :
                 foreach ($_FILES["img_url"]["name"] as $key => $value) :
@@ -173,7 +173,7 @@ class Product_categories extends MY_Controller
                 endif;
             endforeach;
             foreach ($data["title"] as $key => $value) :
-                $data["seo_url"][$key] = seo($value);
+                $data["seo_url"][$key] = seo($value . "-" . time());
             endforeach;
             $data = makeJSON($data);
             $update = $this->product_category_model->update(["id" => $id], $data);

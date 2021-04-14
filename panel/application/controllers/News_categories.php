@@ -105,7 +105,7 @@ class News_categories extends MY_Controller
                 die();
             endif;
             foreach ($data["title"] as $key => $value) :
-                $data["seo_url"][$key] = seo($value);
+                $data["seo_url"][$key] = seo($value . "-" . time());
             endforeach;
             $data = makeJSON($data);
             $data["isActive"] = 1;
@@ -173,7 +173,7 @@ class News_categories extends MY_Controller
                 endif;
             endforeach;
             foreach ($data["title"] as $key => $value) :
-                $data["seo_url"][$key] = seo($value);
+                $data["seo_url"][$key] = seo($value . "-" . time());
             endforeach;
             $data = makeJSON($data);
             $update = $this->news_category_model->update(["id" => $id], $data);

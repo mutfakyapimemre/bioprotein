@@ -112,7 +112,7 @@ class News extends MY_Controller
                 die();
             endif;
             foreach ($data["title"] as $key => $value) :
-                $data["seo_url"][$key] = seo($data["title"][$key]);
+                $data["seo_url"][$key] = seo($data["title"][$key] . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
             $data = makeJSON($data);
@@ -178,7 +178,7 @@ class News extends MY_Controller
                 endif;
             endforeach;
             foreach ($data["title"] as $key => $value) :
-                $data["seo_url"][$key] = seo($value);
+                $data["seo_url"][$key] = seo($value . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
 

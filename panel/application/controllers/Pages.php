@@ -110,7 +110,7 @@ class Pages extends MY_Controller
                 die();
             endif;
             foreach ($data["title"] as $key => $value) :
-                $data["url"][$key] = seo($data["title"][$key]);
+                $data["url"][$key] = seo($data["title"][$key] . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
             $data = makeJSON($data);
@@ -175,7 +175,7 @@ class Pages extends MY_Controller
                 endif;
             endforeach;
             foreach ($data["title"] as $key => $value) :
-                $data["url"][$key] = seo($value);
+                $data["url"][$key] = seo($value . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
 

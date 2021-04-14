@@ -97,7 +97,7 @@ class Products extends MY_Controller
         else :
             $getRank = $this->product_model->rowCount();
             foreach ($data["title"] as $key => $value) :
-                $data["url"][$key] = seo($data["title"][$key]);
+                $data["url"][$key] = seo($data["title"][$key] . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
             $data = makeJSON($data);
@@ -143,7 +143,7 @@ class Products extends MY_Controller
         else :
             $product = $this->product_model->get(["id" => $id]);
             foreach ($data["title"] as $key => $value) :
-                $data["url"][$key] = seo($value);
+                $data["url"][$key] = seo($value . "-" . time());
                 $data["content"][$key] = $_POST["content"][$key];
             endforeach;
             $data = makeJSON($data);

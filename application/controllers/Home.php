@@ -292,18 +292,18 @@ class Home extends CI_Controller
             $result = $this->general_model->get_all("menus", null, "rank ASC", ["position" => $position, "top_id" => $in_parent, "isActive" => 1]);
             $html .=  '<ul class="' . ($position == "HEADER" ? ($in_parent == 0 ? "nav-menu" : "sub-menu") : ($position == "HEADER_RIGHT" ? "useful-link" : ($position == "MOBILE" ? ($in_parent == 0 ? "mobile-menu" : "dropdown") : "sitemap-widget"))) . '">';
             foreach ($result as $key => $value) :
+                $page = $this->general_model->get("pages", null, ["isActive" => 1, "id" => $value->page_id]);
+                if ($value->page_id != 0) :
+                    if (!empty($page)) :
+                        $page->url = (!empty($page->url) ? json_decode($page->url, true)[$lang] : null);
+                    endif;
+                endif;
                 $value->title = (!empty($value->title) ? json_decode($value->title, true)[$lang] : null);
                 if (!empty($value->url)) :
                     $value->url = (!empty($value->url) ? json_decode($value->url, true)[$lang] : null);
                 endif;
-                $html .= '<li ' . (($position == "MOBILE" || $position == "HEADER") && in_array($value->id, $store_all_id) ? ($this->uri->segment(1) == strto("lower", seo($value->title)) || $this->uri->segment(2) == strto("lower", seo($value->title)) || ($this->uri->segment(1) === null && $value->url === '/') ? "class='current-menu-item current_page_item menu-item-has-children'" : "class='menu-item-has-children'") : (($this->uri->segment(1) === null && $value->url === '/') || $this->uri->segment(1) == strto("lower", seo($value->title)) || $this->uri->segment(2) == strto("lower", seo($value->title)) ? "class='current-menu-item current_page_item'" : null)) . '>';
+                $html .= '<li ' . (($position == "MOBILE" || $position == "HEADER") && in_array($value->id, $store_all_id) ? ((!empty($page->url) && ($this->uri->segment(1) == strto("lower", seo(@$page->url)) || $this->uri->segment(2) == strto("lower", seo(@$page->url)))) || $this->uri->segment(1) == strto("lower", seo($value->title)) || $this->uri->segment(2) == strto("lower", seo($value->title)) || ($this->uri->segment(1) === null && $value->url === '/') ? "class='current-menu-item current_page_item menu-item-has-children'" : "class='menu-item-has-children'") : ((!empty($page->url) && ($this->uri->segment(1) == strto("lower", seo(@$page->url)) || $this->uri->segment(2) == strto("lower", seo(@$page->url)))) || ($this->uri->segment(1) === null && $value->url === '/') || $this->uri->segment(1) == strto("lower", seo($value->title)) || $this->uri->segment(2) == strto("lower", seo($value->title)) ? "class='current-menu-item current_page_item'" : null)) . '>';
                 if (empty($value->url)) :
-                    $page = $this->general_model->get("pages", null, ["isActive" => 1, "id" => $value->page_id]);
-                    if ($value->page_id != 0) :
-                        if (!empty($page)) :
-                            $page->url = (!empty($page->url) ? json_decode($page->url, true)[$lang] : null);
-                        endif;
-                    endif;
                     if (!empty($page->url)) :
                         $html .= '<a rel="dofollow" href="' . base_url($this->viewData->languageJSON["routes"]["sayfa"] . "/" . (!empty($page->url) ? $page->url : null)) . '" target="' . $value->target . '" title="' . $value->title . '">' . $value->title . '</a>';
                         array_push($this->viewData->page_urls, base_url($this->viewData->languageJSON["routes"]["sayfa"] . "/" . (!empty($page->url) ? $page->url : null)));
@@ -459,7 +459,6 @@ class Home extends CI_Controller
         endif;
         $this->render();
     }
-
     /**
      * Sectors
      */
@@ -1236,17 +1235,38 @@ class Home extends CI_Controller
         set_cookie("lang", $lang, strtotime("+1 year"));
         redirect(base_url());
     }
-
-
     /**
      * Generate a sitemap index file
      * More information about sitemap indexes: http://www.sitemaps.org/protocol.html#index
      */
     public function sitemapindex()
     {
+        /**
+         * Page URLs
+         */
         if (!empty($this->viewData->page_urls)) :
             foreach (array_unique($this->viewData->page_urls) as $key => $value) :
                 $this->sitemapmodel->add($value, NULL, 'always', 1);
+            endforeach;
+        endif;
+        /**
+         * News Categories
+         */
+        $news_categories = $this->general_model->get_all("news_categories", null, "rank ASC", ["isActive" => 1]);
+        if (!empty($news_categories)) :
+            foreach ($news_categories as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $news_categories[$key]->$k = json_decode($v);
+                    else :
+                        $news_categories[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($news_categories as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
+                endif;
             endforeach;
         endif;
         /**
@@ -1269,7 +1289,46 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
-
+        /**
+         * Product Categories
+         */
+        $product_categories = $this->general_model->get_all("product_categories", null, "rank ASC", ["isActive" => 1]);
+        if (!empty($product_categories)) :
+            foreach ($product_categories as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $product_categories[$key]->$k = json_decode($v);
+                    else :
+                        $product_categories[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($product_categories as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["urunler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
+                endif;
+            endforeach;
+        endif;
+        /**
+         * Products
+         */
+        $products = $this->general_model->get_all("products", null, "id DESC", ['isActive' => 1], [], [], []);
+        if (!empty($products)) :
+            foreach ($products as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $products[$key]->$k = json_decode($v);
+                    else :
+                        $products[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($products as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["urunler"] . "/" . $this->viewData->languageJSON["routes"]["urun"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
+                endif;
+            endforeach;
+        endif;
         /**
          * Slides
          */
@@ -1290,7 +1349,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
-
         /**
          * Ads
          */
@@ -1311,28 +1369,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
-
-        /**
-         * News Categories
-         */
-        $news_categories = $this->general_model->get_all("news_categories", null, "rank ASC", ["isActive" => 1]);
-        if (!empty($news_categories)) :
-            foreach ($news_categories as $key => $data) :
-                foreach ($data as $k => $v) :
-                    if (isJson($v)) :
-                        $news_categories[$key]->$k = json_decode($v);
-                    else :
-                        $news_categories[$key]->$k = $v;
-                    endif;
-                endforeach;
-            endforeach;
-            foreach ($news_categories as $k => $v) :
-                if (!empty($v->seo_url->{$this->viewData->lang})) :
-                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
-                endif;
-            endforeach;
-        endif;
-
         /**
          * Services
          */
@@ -1353,7 +1389,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
-
         /**
          * Galleries
          */
@@ -1382,72 +1417,14 @@ class Home extends CI_Controller
      */
     public function sitemap()
     {
-        foreach (array_unique($this->viewData->page_urls) as $key => $value) :
-            $this->sitemapmodel->add($value, NULL, 'always', 1);
-        endforeach;
         /**
-         * News
+         * Page URLs
          */
-        $news = $this->general_model->get_all("news", null, "id DESC", ['isActive' => 1], [], [], []);
-        if (!empty($news)) :
-            foreach ($news as $key => $data) :
-                foreach ($data as $k => $v) :
-                    if (isJson($v)) :
-                        $news[$key]->$k = json_decode($v);
-                    else :
-                        $news[$key]->$k = $v;
-                    endif;
-                endforeach;
-            endforeach;
-            foreach ($news as $k => $v) :
-                if (!empty($v->seo_url->{$this->viewData->lang})) :
-                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/" . $this->viewData->languageJSON["routes"]["haber"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
-                endif;
+        if (!empty($this->viewData->page_urls)) :
+            foreach (array_unique($this->viewData->page_urls) as $key => $value) :
+                $this->sitemapmodel->add($value, NULL, 'always', 1);
             endforeach;
         endif;
-
-        /**
-         * Slides
-         */
-        $slides = $this->general_model->get_all("slides", null, "rank ASC", ["isActive" => 1]);
-        if (!empty($slides)) :
-            foreach ($slides as $key => $data) :
-                foreach ($data as $k => $v) :
-                    if (isJson($v)) :
-                        $slides[$key]->$k = json_decode($v);
-                    else :
-                        $slides[$key]->$k = $v;
-                    endif;
-                endforeach;
-            endforeach;
-            foreach ($slides as $k => $v) :
-                if (!empty($v->button_url->{$this->viewData->lang})) :
-                    $this->sitemapmodel->add($v->button_url->{$this->viewData->lang}, NULL, 'always', 1);
-                endif;
-            endforeach;
-        endif;
-
-        /**
-         * Ads
-         */
-        $ads = $this->general_model->get_all("ads", null, "rank ASC", ["isActive" => 1]);
-        if (!empty($ads)) :
-            foreach ($ads as $key => $data) :
-                foreach ($data as $k => $v) :
-                    if (isJson($v)) :
-                        $ads[$key]->$k = json_decode($v);
-                    else :
-                        $ads[$key]->$k = $v;
-                    endif;
-                endforeach;
-            endforeach;
-            foreach ($ads as $k => $v) :
-                if (!empty($v->url->{$this->viewData->lang})) :
-                    $this->sitemapmodel->add($v->url->{$this->viewData->lang}, NULL, 'always', 1);
-                endif;
-            endforeach;
-        endif;
-
         /**
          * News Categories
          */
@@ -1468,7 +1445,106 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
-
+        /**
+         * News
+         */
+        $news = $this->general_model->get_all("news", null, "id DESC", ['isActive' => 1], [], [], []);
+        if (!empty($news)) :
+            foreach ($news as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $news[$key]->$k = json_decode($v);
+                    else :
+                        $news[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($news as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/" . $this->viewData->languageJSON["routes"]["haber"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
+                endif;
+            endforeach;
+        endif;
+        /**
+         * Product Categories
+         */
+        $product_categories = $this->general_model->get_all("product_categories", null, "rank ASC", ["isActive" => 1]);
+        if (!empty($product_categories)) :
+            foreach ($product_categories as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $product_categories[$key]->$k = json_decode($v);
+                    else :
+                        $product_categories[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($product_categories as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["urunler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
+                endif;
+            endforeach;
+        endif;
+        /**
+         * Products
+         */
+        $products = $this->general_model->get_all("products", null, "id DESC", ['isActive' => 1], [], [], []);
+        if (!empty($products)) :
+            foreach ($products as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $products[$key]->$k = json_decode($v);
+                    else :
+                        $products[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($products as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["urunler"] . "/" . $this->viewData->languageJSON["routes"]["urun"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
+                endif;
+            endforeach;
+        endif;
+        /**
+         * Slides
+         */
+        $slides = $this->general_model->get_all("slides", null, "rank ASC", ["isActive" => 1]);
+        if (!empty($slides)) :
+            foreach ($slides as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $slides[$key]->$k = json_decode($v);
+                    else :
+                        $slides[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($slides as $k => $v) :
+                if (!empty($v->button_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add($v->button_url->{$this->viewData->lang}, NULL, 'always', 1);
+                endif;
+            endforeach;
+        endif;
+        /**
+         * Ads
+         */
+        $ads = $this->general_model->get_all("ads", null, "rank ASC", ["isActive" => 1]);
+        if (!empty($ads)) :
+            foreach ($ads as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $ads[$key]->$k = json_decode($v);
+                    else :
+                        $ads[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($ads as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add($v->url->{$this->viewData->lang}, NULL, 'always', 1);
+                endif;
+            endforeach;
+        endif;
         /**
          * Services
          */
@@ -1489,7 +1565,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
-
         /**
          * Galleries
          */
