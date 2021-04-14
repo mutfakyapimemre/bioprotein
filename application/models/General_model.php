@@ -148,7 +148,8 @@ class General_model extends CI_Model
 				$this->db->limit($limit[0]);
 			endif;
 		endif;
-		return $this->db->order_by($order)->get($tableName)->result();
+		$this->db->order_by($order);
+		return $this->db->get($tableName)->result();
 	}
 
 	public function add($tableName = null, $data = array())

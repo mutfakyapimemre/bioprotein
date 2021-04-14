@@ -735,7 +735,7 @@ class Home extends CI_Controller
         $config["last_tag_close"] = "</li>";
         $config["full_tag_close"] = "</ul>";
         $config['attributes'] = array('class' => '');
-        $config['total_rows'] = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->rowCount("products", ["isActive" => 1], ["category_id" => $category_id, "title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search]) : $this->general_model->rowCount("products", ["isActive" => 1,], ["title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search]));
+        $config['total_rows'] = (!empty($seo_url) && !is_numeric($seo_url) ? (!empty($search) ? $this->general_model->rowCount("products", ["isActive" => 1], ["category_id" => $category_id, "title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search]) : $this->general_model->rowCount("products", ["isActive" => 1], ["category_id" => $category_id])) : (!empty($search) ? $this->general_model->rowCount("products", ["isActive" => 1,], ["title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search]) : $this->general_model->rowCount("products", ["isActive" => 1,], [])));
         $config['per_page'] = 12;
         $choice = $config["total_rows"] / $config["per_page"];
         $config["num_links"] = round($choice);
@@ -770,7 +770,7 @@ class Home extends CI_Controller
         /**
          * Get Products
          */
-        $this->viewData->products = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["category_id" => $category_id, "title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search], [], [$config["per_page"], $offset]) : $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search], [], [$config["per_page"], $offset]));
+        $this->viewData->products = (!empty($seo_url) && !is_numeric($seo_url) ? (!empty($search) ? $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["category_id" => $category_id, "title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search], [], [$config["per_page"], $offset]) : $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["category_id" => $category_id], [], [$config["per_page"], $offset])) : (!empty($search) ? $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search], [], [$config["per_page"], $offset]) : $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], [], [], [$config["per_page"], $offset])));
         foreach ($this->viewData->products as $key => $data) :
             foreach ($data as $k => $v) :
                 if (isJson($v)) :
