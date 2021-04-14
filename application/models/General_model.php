@@ -56,7 +56,7 @@ class General_model extends CI_Model
 		return $this->db->where($where)->get($tableName)->row();
 	}
 
-	public function get_all($tableName = null, $select = null, $order = null, $where = [],  $likes = [], $joinTable = [], $limit = [])
+	public function get_all($tableName = null, $select = null, $order = null, $where = [],  $likes = [], $joinTable = [], $limit = [], $wherein = [])
 	{
 		if (!empty($select)) :
 			$this->db->select($select);
@@ -68,34 +68,77 @@ class General_model extends CI_Model
 		endif;
 		$this->db->where(["id!=" => null]);
 		$this->db->where($where);
+		if (!empty($wherein)) :
+			foreach ($wherein as $key => $value) :
+				$this->db->where_in($key, $value);
+			endforeach;
+		endif;
 		if (!empty($likes)) :
 			$i = 0;
+			$j = 0;
 			foreach ($likes as $key => $value) :
-				// first loop
-				if ($i === 0) :
-					// open bracket
-					$this->db->group_start();
-					$this->db->like($key, $value, 'both');
-					$this->db->or_like($key, strto("lower", $value), 'both');
-					$this->db->or_like($key, strto("lower|upper", $value), 'both');
-					$this->db->or_like($key, strto("lower|ucwords", $value), 'both');
-					$this->db->or_like($key, strto("lower|capitalizefirst", $value), 'both');
-					$this->db->or_like($key, strto("lower|ucfirst", $value), 'both');
-				else :
-					$this->db->or_like($key, $value, 'both');
-					$this->db->or_like($key, strto("lower", $value), 'both');
-					$this->db->or_like($key, strto("lower|upper", $value), 'both');
-					$this->db->or_like($key, strto("lower|ucwords", $value), 'both');
-					$this->db->or_like($key, strto("lower|capitalizefirst", $value), 'both');
-					$this->db->or_like($key, strto("lower|ucfirst", $value), 'both');
-				endif;
+				if (!is_array($value)) :
+					// first loop
+					if ($i === 0) :
+						// open bracket
+						$this->db->group_start();
+						$this->db->like($key, $value, 'both');
+						$this->db->or_like($key, strto("lower", $value), 'both');
+						$this->db->or_like($key, strto("lower|upper", $value), 'both');
+						$this->db->or_like($key, strto("lower|ucwords", $value), 'both');
+						$this->db->or_like($key, strto("lower|capitalizefirst", $value), 'both');
+						$this->db->or_like($key, strto("lower|ucfirst", $value), 'both');
+					else :
+						$this->db->or_like($key, $value, 'both');
+						$this->db->or_like($key, strto("lower", $value), 'both');
+						$this->db->or_like($key, strto("lower|upper", $value), 'both');
+						$this->db->or_like($key, strto("lower|ucwords", $value), 'both');
+						$this->db->or_like($key, strto("lower|capitalizefirst", $value), 'both');
+						$this->db->or_like($key, strto("lower|ucfirst", $value), 'both');
+					endif;
 
-				// last loop
-				if (count($likes) - 1 == $i) :
-					// close bracket
-					$this->db->group_end();
+					// last loop
+					if (count($likes) - 1 == $i) :
+						// close bracket
+						$this->db->group_end();
+					endif;
+					$i++;
+				else :
+					// first loop
+					if ($i === 0) :
+						// open bracket
+						$this->db->group_start();
+					endif;
+					foreach ($value as $k => $v) :
+						foreach ($v as $kk => $vv) :
+							// first loop
+							if ($j === 0) :
+
+								$this->db->like($kk, $vv, 'both');
+								$this->db->or_like($kk, strto("lower", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|upper", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|ucwords", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|capitalizefirst", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|ucfirst", $vv), 'both');
+							else :
+								$this->db->or_like($kk, $vv, 'both');
+								$this->db->or_like($kk, strto("lower", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|upper", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|ucwords", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|capitalizefirst", $vv), 'both');
+								$this->db->or_like($kk, strto("lower|ucfirst", $vv), 'both');
+							endif;
+							$j++;
+						endforeach;
+					endforeach;
+
+					// last loop
+					if (count($likes) - 1 == $i) :
+						// close bracket
+						$this->db->group_end();
+					endif;
+					$i++;
 				endif;
-				$i++;
 			endforeach;
 		endif;
 		if (!empty($limit)) :

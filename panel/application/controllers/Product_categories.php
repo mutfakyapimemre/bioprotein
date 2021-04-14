@@ -43,8 +43,8 @@ class Product_categories extends MY_Controller
                     İşlemler
                 </button>
                 <div class="dropdown-menu rounded-0 dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item updateProductCategoryBtn" href="javascript:void(0)" data-url="' . base_url("product_categories/update_form/$item->id") . '"><i class="fa fa-pen mr-2"></i>Kaydı Düzenle</a>
-                    <a class="dropdown-item remove-btn" href="javascript:void(0)" data-table="productCategoryTable" data-url="' . base_url("product_categories/delete/$item->id") . '"><i class="fa fa-trash mr-2"></i>Kaydı Sil</a>
+                    <a class="dropdown-item updateProductCategoryBtn" href="javascript:void(0)" data-url="' . base_url("product_categories/update_form/$item->category_id") . '"><i class="fa fa-pen mr-2"></i>Kaydı Düzenle</a>
+                    <a class="dropdown-item remove-btn" href="javascript:void(0)" data-table="productCategoryTable" data-url="' . base_url("product_categories/delete/$item->category_id") . '"><i class="fa fa-trash mr-2"></i>Kaydı Sil</a>
                     </div>
             </div>';
 
@@ -52,8 +52,8 @@ class Product_categories extends MY_Controller
 
             //array_push($renkler,$renk->negotiation_stage_color);
 
-            $checkbox = '<div class="custom-control custom-switch"><input data-id="' . $item->id . '" data-url="' . base_url("product_categories/isActiveSetter/{$item->id}") . '" data-status="' . ($item->isActive == 1 ? "checked" : null) . '" id="customSwitch' . $i . '" type="checkbox" ' . ($item->isActive == 1 ? "checked" : null) . ' class="my-check custom-control-input" >  <label class="custom-control-label" for="customSwitch' . $i . '"></label></div>';
-            $data[] = array($item->rank, '<i class="fa fa-arrows" data-id="' . $item->id . '"></i>', $item->id, $item->title, $checkbox, turkishDate("d F Y, l H:i:s", $item->createdAt), turkishDate("d F Y, l H:i:s", $item->updatedAt), $proccessing);
+            $checkbox = '<div class="custom-control custom-switch"><input data-id="' . $item->category_id . '" data-url="' . base_url("product_categories/isActiveSetter/{$item->category_id}") . '" data-status="' . ($item->isActive == 1 ? "checked" : null) . '" id="customSwitch' . $i . '" type="checkbox" ' . ($item->isActive == 1 ? "checked" : null) . ' class="my-check custom-control-input" >  <label class="custom-control-label" for="customSwitch' . $i . '"></label></div>';
+            $data[] = array($item->rank, '<i class="fa fa-arrows" data-id="' . $item->category_id . '"></i>', $item->category_id, $item->title, (!empty($item->product_category) ? $item->product_category : "<strong class='text-danger'>Ana Kategori</strong>"), $checkbox, turkishDate("d F Y, l H:i:s", $item->createdAt), turkishDate("d F Y, l H:i:s", $item->updatedAt), $proccessing);
         }
 
 
@@ -81,7 +81,7 @@ class Product_categories extends MY_Controller
     public function save()
     {
         $data = rClean($this->input->post());
-        if (checkEmpty($data)["error"]) :
+        if (checkEmpty($data)["error"] && checkEmpty($data)["key"] != "top_id") :
             $key = checkEmpty($data)["key"];
             echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Ürün Kategorisi Kaydı Yapılırken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);
         else :
@@ -89,6 +89,24 @@ class Product_categories extends MY_Controller
             foreach ($data["title"] as $key => $value) :
                 $data["seo_url"][$key] = seo($value);
             endforeach;
+            if (!empty($_FILES)) :
+                foreach ($_FILES["img_url"]["name"] as $key => $value) :
+                    if ($value == "") :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Ürün Kategorisi Eklenirken Hata Oluştu. Ürün Kategorisi Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
+                        die();
+                    endif;
+                    $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
+                    if ($image["success"]) :
+                        $data["img_url"][$key] = $image["file_name"];
+                    else :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Ürün Kategorisi Kaydı Yapılırken Hata Oluştu. Ürün Kategorisi Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                endforeach;
+            else :
+                echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Ürün Kategorisi Kaydı Yapılırken Hata Oluştu. Ürün Kategorisi Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                die();
+            endif;
             $data = makeJSON($data);
             $data["isActive"] = 1;
             $data["rank"] = $getRank + 1;
@@ -108,7 +126,7 @@ class Product_categories extends MY_Controller
                 "id"    => $id,
             )
         );
-        $category = $this->product_category_model->get_all();
+        $category = $this->product_category_model->get_all(["id!=" => $item->id]);
         $viewData->categories = $category;
         $viewData->viewFolder = $this->viewFolder;
         $viewData->subViewFolder = "update";
@@ -126,14 +144,16 @@ class Product_categories extends MY_Controller
     public function update($id)
     {
         $data = rClean($this->input->post());
-        if (checkEmpty($data)["error"]) :
+        if (checkEmpty($data)["error"] && checkEmpty($data)["key"] != "top_id") :
             $key = checkEmpty($data)["key"];
             echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Ürün Kategorisi Güncelleştirilirken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);
         else :
             $product_category = $this->product_category_model->get(["id" => $id]);
-            foreach (json_decode($product_category->img_url, true) as $key => $value) :
-                $data["img_url"][$key] = $value;
-            endforeach;
+            if (!empty($product_category->img_url)) :
+                foreach (json_decode($product_category->img_url, true) as $key => $value) :
+                    $data["img_url"][$key] = $value;
+                endforeach;
+            endif;
             foreach ($_FILES["img_url"]["name"] as $key => $value) :
                 if (!empty($value)) :
                     $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
@@ -147,7 +167,7 @@ class Product_categories extends MY_Controller
                             endforeach;
                         endif;
                     else :
-                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Sayfa Güncelleştirilirken Hata Oluştu. Haber Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Ürün Kategorisi Güncelleştirilirken Hata Oluştu. Ürün Kategorisi Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
                         die();
                     endif;
                 endif;

@@ -88,19 +88,24 @@ class Services extends MY_Controller
             echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hizmet Kaydı Yapılırken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);
         else :
             $getRank = $this->service_model->rowCount();
-            foreach ($_FILES["img_url"]["name"] as $key => $value) :
-                if ($value == "") :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hizmet Eklenirken Hata Oluştu. Hizmet Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
-                    die();
-                endif;
-                $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
-                if ($image["success"]) :
-                    $data["img_url"][$key] = $image["file_name"];
-                else :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hizmet Kaydı Yapılırken Hata Oluştu. Hizmet Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
-            endforeach;
+            if (!empty($_FILES)) :
+                foreach ($_FILES["img_url"]["name"] as $key => $value) :
+                    if ($value == "") :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hizmet Eklenirken Hata Oluştu. Hizmet Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
+                        die();
+                    endif;
+                    $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
+                    if ($image["success"]) :
+                        $data["img_url"][$key] = $image["file_name"];
+                    else :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hizmet Kaydı Yapılırken Hata Oluştu. Hizmet Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                endforeach;
+            else :
+                echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hizmet Kaydı Yapılırken Hata Oluştu. Hizmet Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                die();
+            endif;
             foreach ($data["title"] as $key => $value) :
                 $data["url"][$key] = seo($data["title"][$key]);
                 $data["content"][$key] = $_POST["content"][$key];

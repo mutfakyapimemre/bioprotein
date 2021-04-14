@@ -119,10 +119,6 @@
 		font-size: 13px;
 	}
 
-	.rs-header.rs-defult-header .menu-area .rs-menu {
-		padding-right: 103px;
-	}
-
 	.rs-slider .slide-content .slider-title {
 		font-size: 45px;
 	}
@@ -370,7 +366,6 @@
 	.rs-menu-toggle {
 		padding: 20px;
 		text-align: right;
-		padding-right: 100px;
 		font-size: 25px;
 	}
 
@@ -827,7 +822,7 @@
 	}
 
 	.rs-header .menu-area .logo-area {
-		top: 13px;
+		position: relative
 	}
 
 	.rs-header .menu-area .logo-area picture img {

@@ -1,9 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+
 <!--Full width header Start-->
 <div class="full-width-header">
     <!-- Toolbar Start -->
     <div class="rs-toolbar hidden-md">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
                     <div class="rs-toolbar-left">
@@ -85,26 +86,23 @@
     <!--Header Start-->
     <header id="rs-header" class="rs-header rs-defult-header bg-dark">
         <div class="menu-area menu-sticky bg-dark">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="main-menu">
                     <div class="row">
-                        <div class="col-12">
-                            <!-- logo-area star-->
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <!-- logo-area start-->
                             <div class="logo-area">
                                 <a rel="dofollow" href="<?= base_url() ?>" title="<?= $settings->company_name ?>">
                                     <picture>
                                         <img src="<?= get_picture("settings_v", $settings->logo) ?>" data-src="<?= get_picture("settings_v", $settings->logo) ?>" alt="<?= $settings->company_name ?>" class="lazyload img-full img-fluid">
                                     </picture>
                                 </a>
-                            </div><!-- .logo-area end-->
-
+                            </div>
+                            <!-- .logo-area end-->
                             <!-- mainmenu-area start -->
-                            <div class="mainmenu-area">
-                                <a class="rs-menu-toggle"><i class="fa fa-bars"></i></a>
-                                <nav class="rs-menu">
-                                    <?= $menus ?>
-                                </nav>
-                                <div class="cart-area">
+                            <a class="rs-menu-toggle float-right my-auto py-auto d-flex d-lg-none d-xl-none align-items-center align-content-center" style="height: 100px;"><i class="fa fa-bars"></i></a>
+                            <div class="float-right d-flex align-middle align-items-center align-content-center my-auto py-auto" style="height: 100px;">
+                                <div class="cart-area my-auto py-auto  justify-content-center align-items-center align-content-center">
                                     <form action="<?= base_url($languageJSON["routes"]["dil-degistir"]) ?>" method="POST" enctype="multipart/form-data" id="langform" class="off-canvas-search-btn">
                                         <select name="lang" onchange="$('#langform').submit()" required>
                                             <?php if (!empty($languages)) : ?>
@@ -116,12 +114,26 @@
                                         </select>
                                     </form>
                                 </div>
-                                <div class="cart-area2">
+                                <div class="cart-area2 my-auto py-auto d-block justify-content-center align-items-center align-content-centero">
                                     <a class="rs-search" data-target=".search-modal" data-toggle="modal" href="javascript:void(0)">
-                                        <i class="fa fa-search"></i></a>
+                                        <i class="fa fa-search"></i>
+                                    </a>
                                 </div>
+                            </div>
+                            <div class="mainmenu-area">
+                                <nav class="rs-menu">
+                                    <?= $menus ?>
+                                </nav>
+                            </div>
 
-                            </div><!-- .mainmenu-area end -->
+
+
+                            <!-- .mainmenu-area end -->
+
+
+
+
+
                         </div>
                     </div>
 

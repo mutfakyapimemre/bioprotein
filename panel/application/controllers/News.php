@@ -93,19 +93,24 @@ class News extends MY_Controller
             echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Kaydı Yapılırken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);
         else :
             $getRank = $this->news_model->rowCount();
-            foreach ($_FILES["img_url"]["name"] as $key => $value) :
-                if ($value == "") :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Eklenirken Hata Oluştu. Haber Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
-                    die();
-                endif;
-                $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
-                if ($image["success"]) :
-                    $data["img_url"][$key] = $image["file_name"];
-                else :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Kaydı Yapılırken Hata Oluştu. Haber Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
-            endforeach;
+            if (!empty($_FILES)) :
+                foreach ($_FILES["img_url"]["name"] as $key => $value) :
+                    if ($value == "") :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Eklenirken Hata Oluştu. Haber Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
+                        die();
+                    endif;
+                    $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
+                    if ($image["success"]) :
+                        $data["img_url"][$key] = $image["file_name"];
+                    else :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Kaydı Yapılırken Hata Oluştu. Haber Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                endforeach;
+            else :
+                echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Haber Kaydı Yapılırken Hata Oluştu. Haber Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                die();
+            endif;
             foreach ($data["title"] as $key => $value) :
                 $data["seo_url"][$key] = seo($data["title"][$key]);
                 $data["content"][$key] = $_POST["content"][$key];

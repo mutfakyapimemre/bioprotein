@@ -139,7 +139,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-
         /**
          * Slides
          */
@@ -153,7 +152,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-
         /**
          * Ads
          */
@@ -167,7 +165,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-
         /**
          * News Categories
          */
@@ -181,7 +178,6 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-
         /**
          * Services
          */
@@ -195,17 +191,45 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-
         /**
-         * Products
+         * Get Suggested Products
          */
-        $this->viewData->products = $this->general_model->get_all("products", null, "rank ASC", ["isActive" => 1], [], [], [6]);
-        foreach ($this->viewData->products as $key => $data) :
+        $this->viewData->suggestedProducts = $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1, "isSuggested" => 1], [], [], [20]);
+        shuffle($this->viewData->suggestedProducts);
+        foreach ($this->viewData->suggestedProducts as $key => $data) :
             foreach ($data as $k => $v) :
                 if (isJson($v)) :
-                    $this->viewData->products[$key]->$k = json_decode($v);
+                    $this->viewData->suggestedProducts[$key]->$k = json_decode($v);
                 else :
-                    $this->viewData->products[$key]->$k = $v;
+                    $this->viewData->suggestedProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get New Products
+         */
+        $this->viewData->newProducts = $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1, "isNew" => 1], [], [], [20]);
+        shuffle($this->viewData->newProducts);
+        foreach ($this->viewData->newProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->newProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->newProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Discount Products
+         */
+        $this->viewData->discountProducts = $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1, "isDiscount" => 1], [], [], [20]);
+        shuffle($this->viewData->discountProducts);
+        foreach ($this->viewData->discountProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->discountProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->discountProducts[$key]->$k = $v;
                 endif;
             endforeach;
         endforeach;
@@ -215,13 +239,16 @@ class Home extends CI_Controller
          * =================
          */
 
+        /**
+         * Product Images
+         */
+        $this->viewData->product_images = $this->general_model->get_all("product_images", null, "rank ASC", ["isActive" => 1, "isCover" => 1, "lang" => $this->viewData->lang]);
+
+        /**
+         * About Gallery
+         */
         $this->viewData->homeGallery = $this->general_model->get("galleries", null, ["id" => 1, "isActive" => 1]);
         $this->viewData->homeGalleryItems = $this->general_model->get_all("images", null, "rank ASC", ["gallery_id" => 1, "isActive" => 1, "lang" => $this->viewData->lang]);
-        $this->viewData->homeDepartmentsGallery = $this->general_model->get("galleries", null, ["id" => 2, "isActive" => 1]);
-        $this->viewData->homeDepartmentsGalleryItems = $this->general_model->get_all("images", null, "rank ASC", ["gallery_id" => 2, "isActive" => 1, "lang" => $this->viewData->lang]);
-        $this->viewData->simpleGallery = $this->general_model->get("galleries", null, ["id" => 8, "isActive" => 1]);
-        $this->viewData->simpleGalleryItems = $this->general_model->get_all("images", null, "rank ASC", ["gallery_id" => 8, "isActive" => 1, "lang" => $this->viewData->lang]);
-
 
         $this->viewData->meta_title = $this->viewData->settings->company_name;
         $this->viewData->meta_desc  = str_replace("”", "\"", stripslashes($this->viewData->settings->meta_description));
@@ -417,14 +444,14 @@ class Home extends CI_Controller
             endforeach;
         endforeach;
         $lang = $this->viewData->lang;
-        $this->viewData->meta_title = $this->viewData->service->title->$lang;
-        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes($this->viewData->service->content->$lang)));
+        $this->viewData->meta_title = @$this->viewData->service->title->$lang;
+        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes(@$this->viewData->service->content->$lang)));
         $this->viewData->meta_keyw  = clean($this->viewData->settings->meta_keywords);
         $this->viewData->og_url                 = clean(base_url($this->viewData->languageJSON["routes"]["hizmet"] . "/" . $seo_url));
-        $this->viewData->og_image           = clean(get_picture("services_v", $this->viewData->service->img_url->$lang));
+        $this->viewData->og_image           = clean(get_picture("services_v", @$this->viewData->service->img_url->$lang));
         $this->viewData->og_type          = "article";
-        $this->viewData->og_title           = $this->viewData->service->title->$lang;
-        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes($this->viewData->service->content->$lang)));
+        $this->viewData->og_title           = @$this->viewData->service->title->$lang;
+        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes(@$this->viewData->service->content->$lang)));
         if (empty($this->viewData->service)) :
             $this->viewFolder = "404_v/index";
         else :
@@ -478,14 +505,14 @@ class Home extends CI_Controller
         $seo_url = $this->uri->segment(2);
         $this->viewData->item = $this->general_model->get("pages", null, ["isActive" => 1], [], ['url' => '"' . $seo_url . '"']);
         $lang = $this->viewData->lang;
-        $this->viewData->meta_title = json_decode($this->viewData->item->title)->$lang;
-        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes(json_decode($this->viewData->item->content)->$lang)));
+        $this->viewData->meta_title = @json_decode(@$this->viewData->item->title)->$lang;
+        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes(@json_decode(@$this->viewData->item->content)->$lang)));
         $this->viewData->meta_keyw  = clean($this->viewData->settings->meta_keywords);
         $this->viewData->og_url                 = clean(base_url($this->viewData->languageJSON["routes"]["sayfa"] . "/" . $seo_url));
-        $this->viewData->og_image           = clean(get_picture("pages_v", json_decode($this->viewData->item->img_url)->$lang));
+        $this->viewData->og_image           = clean(get_picture("pages_v", @json_decode(@$this->viewData->item->img_url)->$lang));
         $this->viewData->og_type          = "article";
-        $this->viewData->og_title           = json_decode($this->viewData->item->title)->$lang;
-        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes(json_decode($this->viewData->item->content)->$lang)));
+        $this->viewData->og_title           = @json_decode(@$this->viewData->item->title)->$lang;
+        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes(@json_decode(@$this->viewData->item->content)->$lang)));
         if (empty($this->viewData->item)) :
             $this->viewFolder = "404_v/index";
         else :
@@ -617,7 +644,7 @@ class Home extends CI_Controller
             endforeach;
         endif;
         if (!empty($this->viewData->news->category_id)) :
-            $this->viewData->category = $this->general_model->get("news_categories", null, ["id" => $this->viewData->news->category_id, "isActive" => 1]);
+            $this->viewData->category = $this->general_model->get("news_categories", null, ["id" => @$this->viewData->news->category_id, "isActive" => 1]);
         endif;
         $lang = $this->viewData->lang;
         $this->viewData->categories = $this->general_model->get_all("news_categories", null, "id DESC", ["isActive" => 1]);
@@ -630,7 +657,7 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-        $this->viewData->latestNews = (!empty($this->viewData->news->category_id) ? $this->general_model->get_all("news", null, "id DESC", ['category_id' => $this->viewData->news->category_id, "isActive" => 1], [], [], [5]) : $this->general_model->get_all("news", null, "id DESC", ["isActive" => 1], [], [], [5]));
+        $this->viewData->latestNews = (!empty($this->viewData->news->category_id) ? $this->general_model->get_all("news", null, "id DESC", ['category_id' => @$this->viewData->news->category_id, "isActive" => 1], [], [], [5]) : $this->general_model->get_all("news", null, "id DESC", ["isActive" => 1], [], [], [5]));
         foreach ($this->viewData->latestNews as $key => $data) :
             foreach ($data as $k => $v) :
                 if (isJson($v)) :
@@ -640,7 +667,7 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-        $this->viewData->randomNews = (!empty($this->viewData->news->category_id) ? $this->general_model->get_all("news", null, "id DESC", ['category_id' => $this->viewData->news->category_id, "isActive" => 1], [], [], [3]) : $this->general_model->get_all("news", null, "id DESC", ["isActive" => 1], [], [], [3]));
+        $this->viewData->randomNews = (!empty($this->viewData->news->category_id) ? $this->general_model->get_all("news", null, "id DESC", ['category_id' => @$this->viewData->news->category_id, "isActive" => 1], [], [], [3]) : $this->general_model->get_all("news", null, "id DESC", ["isActive" => 1], [], [], [3]));
         shuffle($this->viewData->randomNews);
         foreach ($this->viewData->randomNews as $key => $data) :
             foreach ($data as $k => $v) :
@@ -651,14 +678,14 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
-        $this->viewData->meta_title = $this->viewData->news->title->$lang;
-        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes($this->viewData->news->content->$lang)));
+        $this->viewData->meta_title = @$this->viewData->news->title->$lang;
+        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes(@$this->viewData->news->content->$lang)));
         $this->viewData->meta_keyw  = clean($this->viewData->settings->meta_keywords);
         $this->viewData->og_url                 = clean(base_url($this->viewData->languageJSON["routes"]["sayfa"] . "/" . $seo_url));
-        $this->viewData->og_image           = clean(get_picture("news_v", $this->viewData->news->img_url->$lang));
+        $this->viewData->og_image           = clean(get_picture("news_v", @$this->viewData->news->img_url->$lang));
         $this->viewData->og_type          = "article";
-        $this->viewData->og_title           = $this->viewData->news->title->$lang;
-        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes($this->viewData->news->content->$lang)));
+        $this->viewData->og_title           = @$this->viewData->news->title->$lang;
+        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes(@$this->viewData->news->content->$lang)));
         if (empty($this->viewData->news)) :
             $this->viewFolder = "404_v/index";
         else :
@@ -671,11 +698,15 @@ class Home extends CI_Controller
      */
     public function products()
     {
+        $search = null;
+        if (!empty(clean($this->input->get("search")))) :
+            $search = clean($this->input->get("search"));
+        endif;
         $seo_url = $this->uri->segment(2);
         $category_id = null;
         $category = null;
         if (!empty($seo_url) && !is_numeric($seo_url)) :
-            $category = $this->general_model->get("product_categories", null, ["isActive" => 1], [], ["seo_url" => $seo_url]);
+            $category = $this->general_model->get("product_categories", null, ["isActive" => 1], [], ["seo_url" => '"' . $seo_url . '"']);
             if (!empty($category)) :
                 $category_id = $category->id;
                 $category->seo_url = (!empty($category->seo_url) ? json_decode($category->seo_url, true)[$this->viewData->lang] : null);
@@ -705,7 +736,7 @@ class Home extends CI_Controller
         $config["last_tag_close"] = "</li>";
         $config["full_tag_close"] = "</ul>";
         $config['attributes'] = array('class' => '');
-        $config['total_rows'] = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->rowCount("products", ["isActive" => 1, "category_id" => $category_id]) : $this->general_model->rowCount("products", ["isActive" => 1,]));
+        $config['total_rows'] = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->rowCount("products", ["isActive" => 1], ["category_id" => $category_id, "title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search]) : $this->general_model->rowCount("products", ["isActive" => 1,], ["title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search]));
         $config['per_page'] = 12;
         $choice = $config["total_rows"] / $config["per_page"];
         $config["num_links"] = round($choice);
@@ -720,7 +751,27 @@ class Home extends CI_Controller
         endif;
         $this->viewData->products_category = $category;
         $offset = ($uri_segment - 1) * $config['per_page'];
-        $this->viewData->products = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->get_all("products", null, null, ['category_id' => $category_id, "isActive" => 1], [], [], [$config["per_page"], $offset]) : $this->general_model->get_all("products", null, null, ["isActive" => 1], [], [], [$config["per_page"], $offset]));
+        /**
+         * Get All Categories
+         */
+        $this->viewData->categories = $this->general_model->get_all("product_categories", null, "rank ASC", ["isActive" => 1], [], [], []);
+        foreach ($this->viewData->categories as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->categories[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->categories[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Product Images
+         */
+        $this->viewData->product_images = $this->general_model->get_all("product_images", null, "rank ASC", ["isActive" => 1]);
+        /**
+         * Get Products
+         */
+        $this->viewData->products = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["category_id" => $category_id, "title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search], [], [$config["per_page"], $offset]) : $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["title" =>  $search, "content" =>  $search, "createdAt" => $search, "updatedAt" =>  $search], [], [$config["per_page"], $offset]));
         foreach ($this->viewData->products as $key => $data) :
             foreach ($data as $k => $v) :
                 if (isJson($v)) :
@@ -730,6 +781,78 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endforeach;
+        /**
+         * Get Latest Products
+         */
+        $this->viewData->latestProducts = (!empty($category_id) ? $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["category_id" => $category_id,], [], [5], []) : $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], [], [], [5]));
+        foreach ($this->viewData->latestProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->latestProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->latestProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Random Products
+         */
+        $this->viewData->randomProducts = (!empty($category_id) ? $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], ["category_id" => $category_id,], [], [], []) : $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1], [], [], [3]));
+        shuffle($this->viewData->randomProducts);
+        foreach ($this->viewData->randomProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->randomProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->randomProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Suggested Products
+         */
+        $this->viewData->suggestedProducts = $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1, "isSuggested" => 1], [], [], [20]);
+        shuffle($this->viewData->suggestedProducts);
+        foreach ($this->viewData->suggestedProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->suggestedProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->suggestedProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get New Products
+         */
+        $this->viewData->newProducts = $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1, "isNew" => 1], [], [], [20]);
+        shuffle($this->viewData->newProducts);
+        foreach ($this->viewData->newProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->newProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->newProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Discount Products
+         */
+        $this->viewData->discountProducts = $this->general_model->get_all("products", null, "id DESC", ["isActive" => 1, "isDiscount" => 1], [], [], [20]);
+        shuffle($this->viewData->discountProducts);
+        foreach ($this->viewData->discountProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->discountProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->discountProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Meta
+         */
         $this->viewData->meta_title = $this->viewData->settings->company_name;
         $this->viewData->meta_desc  = str_replace("”", "\"", stripslashes($this->viewData->settings->meta_description));
         $this->viewData->meta_keyw  = clean($this->viewData->settings->meta_keywords);
@@ -752,7 +875,10 @@ class Home extends CI_Controller
      */
     public function product_detail($seo_url)
     {
-        $this->viewData->product = $this->general_model->get("products", null, ["isActive" => 1], [], ['seo_url' => '"' . $seo_url . '"']);
+        /**
+         * Get Product Detail
+         */
+        $this->viewData->product = $this->general_model->get("products", null, ["isActive" => 1], [], ['url' => '"' . $seo_url . '"']);
         if (!empty($this->viewData->product)) :
             foreach ($this->viewData->product as $key => $data) :
                 if (isJson($data)) :
@@ -762,18 +888,127 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
+        /**
+         * Get Product Categories
+         */
         if (!empty($this->viewData->product->category_id)) :
-            $this->viewData->categories = $this->general_model->get_all("product_categories", null, ["id" => $this->viewData->product->category_id, "isActive" => 1]);
+            $this->viewData->product_categories = $this->general_model->get_all("product_categories", null, "rank ASC", ["isActive" => 1], [], [], [], ["id" => explode(",", @$this->viewData->product->category_id)]);
+            foreach ($this->viewData->product_categories as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $this->viewData->product_categories[$key]->$k = json_decode($v);
+                    else :
+                        $this->viewData->product_categories[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
         endif;
+        /**
+         * Get All Categories
+         */
+        $this->viewData->categories = $this->general_model->get_all("product_categories", null, "rank ASC", ["isActive" => 1], [], [], []);
+        foreach ($this->viewData->categories as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->categories[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->categories[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Product Images
+         */
+        $this->viewData->product_images = $this->general_model->get_all("product_images", null, "rank ASC", ["isActive" => 1, "product_id" => @$this->viewData->product->id]);
+        $imgURL = null;
+        if (!empty($this->viewData->product_images)) :
+            foreach ($this->viewData->product_images as $key => $value) :
+                if ($value->isCover) :
+                    $imgURL = $value->url;
+                endif;
+            endforeach;
+        endif;
+        /**
+         * Get All Cover Product Images
+         */
+        $this->viewData->product_all_images = $this->general_model->get_all("product_images", null, "rank ASC", ["isActive" => 1, "isCover" => 1]);
+        /**
+         * Split Category 
+         */
+        $implodedCategories = [];
+        $splittedCategories = explode(",", @$this->viewData->product->category_id);
+        if (!empty($splittedCategories)) :
+            foreach ($splittedCategories as $key => $value) :
+                array_push($implodedCategories, ["category_id" => $value]);
+            endforeach;
+        endif;
+        /**
+         * Get Latest Products
+         */
+        $this->viewData->latestProducts = (!empty($this->viewData->product->category_id) ? $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1], ['category_id' => $implodedCategories], [], [5], []) : $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1], [], [], [5]));
+        foreach ($this->viewData->latestProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->latestProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->latestProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Suggested Products
+         */
+        $this->viewData->suggestedProducts = (!empty($this->viewData->product->category_id) ? $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1, "isSuggested" => 1], ['category_id' =>  $implodedCategories], [], [20], []) : $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1, "isSuggested" => 1], [], [], [20]));
+        shuffle($this->viewData->suggestedProducts);
+        foreach ($this->viewData->suggestedProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->suggestedProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->suggestedProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get New Products
+         */
+        $this->viewData->newProducts = (!empty($this->viewData->product->category_id) ? $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1, "isNew" => 1], ['category_id' =>  $implodedCategories], [], [20], []) : $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1, "isNew" => 1], [], [], [20]));
+        shuffle($this->viewData->newProducts);
+        foreach ($this->viewData->newProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->newProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->newProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Get Discount Products
+         */
+        $this->viewData->discountProducts = (!empty($this->viewData->product->category_id) ? $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1, "isDiscount" => 1], ['category_id' =>  $implodedCategories], [], [20], []) : $this->general_model->get_all("products", null, "id DESC", ["id!=" => @$this->viewData->product->id, "isActive" => 1, "isDiscount" => 1], [], [], [20]));
+        shuffle($this->viewData->discountProducts);
+        foreach ($this->viewData->discountProducts as $key => $data) :
+            foreach ($data as $k => $v) :
+                if (isJson($v)) :
+                    $this->viewData->discountProducts[$key]->$k = json_decode($v);
+                else :
+                    $this->viewData->discountProducts[$key]->$k = $v;
+                endif;
+            endforeach;
+        endforeach;
+        /**
+         * Meta
+         */
         $lang = $this->viewData->lang;
-        $this->viewData->meta_title = $this->viewData->product->title->$lang;
-        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes($this->viewData->product->content->$lang)));
+        $this->viewData->meta_title = @$this->viewData->product->title->$lang;
+        $this->viewData->meta_desc  = clean(str_replace("”", "\"", stripslashes(@$this->viewData->product->content->$lang)));
         $this->viewData->meta_keyw  = clean($this->viewData->settings->meta_keywords);
         $this->viewData->og_url                 = clean(base_url($this->viewData->languageJSON["routes"]["sayfa"] . "/" . $seo_url));
-        $this->viewData->og_image           = clean(get_picture("products_v", $this->viewData->product->img_url->$lang));
+        $this->viewData->og_image           = clean(get_picture("products_v", $imgURL));
         $this->viewData->og_type          = "article";
-        $this->viewData->og_title           = $this->viewData->product->title->$lang;
-        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes($this->viewData->product->content->$lang)));
+        $this->viewData->og_title           = @$this->viewData->product->title->$lang;
+        $this->viewData->og_description           = clean(str_replace("”", "\"", stripslashes(@$this->viewData->product->content->$lang)));
         if (empty($this->viewData->product)) :
             $this->viewFolder = "404_v/index";
         else :
@@ -788,7 +1023,7 @@ class Home extends CI_Controller
     {
         $seo_url = $this->uri->segment(2);
         if (!empty($seo_url) && !is_numeric($seo_url)) :
-            $gallery_id = $this->general_model->get("galleries", null, ["isActive" => 1, "isCover" => 0], [], ["url" => $seo_url])->id;
+            $gallery_id = @$this->general_model->get("galleries", null, ["isActive" => 1, "isCover" => 0], [], ["url" => '"' . $seo_url . '"'])->id;
         endif;
         $config = [];
         $config['base_url'] = (!empty($seo_url) && !is_numeric($seo_url) ? base_url("galeriler/{$seo_url}") : base_url("galeriler"));
@@ -813,7 +1048,7 @@ class Home extends CI_Controller
         $config["last_tag_close"] = "</li>";
         $config["full_tag_close"] = "</ul>";
         $config['attributes'] = array('class' => '');
-        $config['total_rows'] = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->rowCount("galleries", ["isActive" => 1, "isCover" => 0, "gallery_id" => $gallery_id]) : $this->general_model->rowCount("galleries", ["isActive" => 1,]));
+        $config['total_rows'] = (!empty($seo_url) && !is_numeric($seo_url) && !empty($gallery_id) ? $this->general_model->rowCount("galleries", ["isActive" => 1, "isCover" => 0, "gallery_id" => @$gallery_id]) : $this->general_model->rowCount("galleries", ["isActive" => 1,]));
         $config['per_page'] = 8;
         $choice = $config["total_rows"] / $config["per_page"];
         $config["num_links"] = round($choice);
@@ -828,7 +1063,7 @@ class Home extends CI_Controller
         endif;
 
         $offset = ($uri_segment - 1) * $config['per_page'];
-        $this->viewData->galleries = (!empty($seo_url) && !is_numeric($seo_url) ? $this->general_model->get_all("galleries", null, null, ['gallery_id' => $gallery_id, "isCover" => 0, "isActive" => 1], [], [], [$config["per_page"], $offset]) : $this->general_model->get_all("galleries", null, null, ["isActive" => 1, "isCover" => 0], [], [], [$config["per_page"], $offset]));
+        $this->viewData->galleries = (!empty($seo_url) && !is_numeric($seo_url) && !empty($gallery_id) ? $this->general_model->get_all("galleries", null, null, ['gallery_id' => @$gallery_id, "isCover" => 0, "isActive" => 1], [], [], [$config["per_page"], $offset]) : $this->general_model->get_all("galleries", null, null, ["isActive" => 1, "isCover" => 0], [], [], [$config["per_page"], $offset]));
         foreach ($this->viewData->galleries as $key => $data) :
             foreach ($data as $k => $v) :
                 if (isJson($v)) :
@@ -870,6 +1105,7 @@ class Home extends CI_Controller
                 endif;
             endforeach;
         endif;
+        $gallery_type = !empty($this->viewData->gallery->gallery_type) ? $this->viewData->gallery->gallery_type : null;
         $this->viewData->meta_title = $this->viewData->settings->company_name;
         $this->viewData->meta_desc  = str_replace("”", "\"", stripslashes($this->viewData->settings->meta_description));
         $this->viewData->meta_keyw  = clean($this->viewData->settings->meta_keywords);
@@ -879,7 +1115,7 @@ class Home extends CI_Controller
         $this->viewData->og_type          = "article";
         $this->viewData->og_title           = clean($this->viewData->settings->company_name);
         $this->viewData->og_description           = clean($this->viewData->settings->meta_description);
-        $this->viewData->gallery_items = $this->general_model->get_all("{$this->viewData->gallery->gallery_type}", null, "rank ASC", ["gallery_id" => $this->viewData->gallery->id, "isActive" => 1, "lang" => $this->viewData->lang]);
+        $this->viewData->gallery_items = !empty($gallery_type) ? $this->general_model->get_all("{$gallery_type}", null, "rank ASC", ["gallery_id" => @$this->viewData->gallery->id, "isActive" => 1, "lang" => $this->viewData->lang]) : [];
         if (empty($this->viewData->gallery_items)) :
             $this->viewFolder = "404_v/index";
         else :
@@ -1008,122 +1244,136 @@ class Home extends CI_Controller
      */
     public function sitemapindex()
     {
-        foreach (array_unique($this->viewData->page_urls) as $key => $value) :
-            $this->sitemapmodel->add($value, NULL, 'always', 1);
-        endforeach;
+        if (!empty($this->viewData->page_urls)) :
+            foreach (array_unique($this->viewData->page_urls) as $key => $value) :
+                $this->sitemapmodel->add($value, NULL, 'always', 1);
+            endforeach;
+        endif;
         /**
          * News
          */
         $news = $this->general_model->get_all("news", null, "id DESC", ['isActive' => 1], [], [], []);
-        foreach ($news as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $news[$key]->$k = json_decode($v);
-                else :
-                    $news[$key]->$k = $v;
+        if (!empty($news)) :
+            foreach ($news as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $news[$key]->$k = json_decode($v);
+                    else :
+                        $news[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($news as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/" . $this->viewData->languageJSON["routes"]["haber"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($news as $k => $v) :
-            if (!empty($v->seo_url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haber"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Slides
          */
         $slides = $this->general_model->get_all("slides", null, "rank ASC", ["isActive" => 1]);
-        foreach ($slides as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $slides[$key]->$k = json_decode($v);
-                else :
-                    $slides[$key]->$k = $v;
+        if (!empty($slides)) :
+            foreach ($slides as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $slides[$key]->$k = json_decode($v);
+                    else :
+                        $slides[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($slides as $k => $v) :
+                if (!empty($v->button_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add($v->button_url->{$this->viewData->lang}, NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($slides as $k => $v) :
-            if (!empty($v->button_url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add($v->button_url->{$this->viewData->lang}, NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Ads
          */
         $ads = $this->general_model->get_all("ads", null, "rank ASC", ["isActive" => 1]);
-        foreach ($ads as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $ads[$key]->$k = json_decode($v);
-                else :
-                    $ads[$key]->$k = $v;
+        if (!empty($ads)) :
+            foreach ($ads as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $ads[$key]->$k = json_decode($v);
+                    else :
+                        $ads[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($ads as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add($v->url->{$this->viewData->lang}, NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($ads as $k => $v) :
-            if (!empty($v->url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add($v->url->{$this->viewData->lang}, NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * News Categories
          */
         $news_categories = $this->general_model->get_all("news_categories", null, "rank ASC", ["isActive" => 1]);
-        foreach ($news_categories as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $news_categories[$key]->$k = json_decode($v);
-                else :
-                    $news_categories[$key]->$k = $v;
+        if (!empty($news_categories)) :
+            foreach ($news_categories as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $news_categories[$key]->$k = json_decode($v);
+                    else :
+                        $news_categories[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($news_categories as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($news_categories as $k => $v) :
-            if (!empty($v->seo_url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Services
          */
         $services = $this->general_model->get_all("services", null, "rank ASC", ["isActive" => 1], [], [], []);
-        foreach ($services as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $services[$key]->$k = json_decode($v);
-                else :
-                    $services[$key]->$k = $v;
+        if (!empty($services)) :
+            foreach ($services as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $services[$key]->$k = json_decode($v);
+                    else :
+                        $services[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($services as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["hizmetlerimiz"] . "/" . $this->viewData->languageJSON["routes"]["hizmet"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($services as $k => $v) :
-            if (!empty($v->url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["hizmet"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Galleries
          */
         $galleries = $this->general_model->get_all("galleries", null, "rank ASC", ["isActive" => 1, "isCover" => 0], [], [], []);
-        foreach ($galleries as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $galleries[$key]->$k = json_decode($v);
-                else :
-                    $galleries[$key]->$k = $v;
+        if (!empty($galleries)) :
+            foreach ($galleries as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $galleries[$key]->$k = json_decode($v);
+                    else :
+                        $galleries[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($galleries as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["galeriler"] . "/" . $this->viewData->languageJSON["routes"]["galeri"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($galleries as $k => $v) :
-            if (!empty($v->url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["galeri"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
         $this->sitemapmodel->output('sitemapindex');
     }
     /**
@@ -1139,115 +1389,127 @@ class Home extends CI_Controller
          * News
          */
         $news = $this->general_model->get_all("news", null, "id DESC", ['isActive' => 1], [], [], []);
-        foreach ($news as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $news[$key]->$k = json_decode($v);
-                else :
-                    $news[$key]->$k = $v;
+        if (!empty($news)) :
+            foreach ($news as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $news[$key]->$k = json_decode($v);
+                    else :
+                        $news[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($news as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/" . $this->viewData->languageJSON["routes"]["haber"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($news as $k => $v) :
-            if (!empty($v->seo_url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haber"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Slides
          */
         $slides = $this->general_model->get_all("slides", null, "rank ASC", ["isActive" => 1]);
-        foreach ($slides as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $slides[$key]->$k = json_decode($v);
-                else :
-                    $slides[$key]->$k = $v;
+        if (!empty($slides)) :
+            foreach ($slides as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $slides[$key]->$k = json_decode($v);
+                    else :
+                        $slides[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($slides as $k => $v) :
+                if (!empty($v->button_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add($v->button_url->{$this->viewData->lang}, NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($slides as $k => $v) :
-            if (!empty($v->button_url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add($v->button_url->{$this->viewData->lang}, NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Ads
          */
         $ads = $this->general_model->get_all("ads", null, "rank ASC", ["isActive" => 1]);
-        foreach ($ads as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $ads[$key]->$k = json_decode($v);
-                else :
-                    $ads[$key]->$k = $v;
+        if (!empty($ads)) :
+            foreach ($ads as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $ads[$key]->$k = json_decode($v);
+                    else :
+                        $ads[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($ads as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add($v->url->{$this->viewData->lang}, NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($ads as $k => $v) :
-            if (!empty($v->url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add($v->url->{$this->viewData->lang}, NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * News Categories
          */
         $news_categories = $this->general_model->get_all("news_categories", null, "rank ASC", ["isActive" => 1]);
-        foreach ($news_categories as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $news_categories[$key]->$k = json_decode($v);
-                else :
-                    $news_categories[$key]->$k = $v;
+        if (!empty($news_categories)) :
+            foreach ($news_categories as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $news_categories[$key]->$k = json_decode($v);
+                    else :
+                        $news_categories[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($news_categories as $k => $v) :
+                if (!empty($v->seo_url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($news_categories as $k => $v) :
-            if (!empty($v->seo_url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["haberler"] . "/{$v->seo_url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Services
          */
         $services = $this->general_model->get_all("services", null, "rank ASC", ["isActive" => 1], [], [], []);
-        foreach ($services as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $services[$key]->$k = json_decode($v);
-                else :
-                    $services[$key]->$k = $v;
+        if (!empty($services)) :
+            foreach ($services as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $services[$key]->$k = json_decode($v);
+                    else :
+                        $services[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($services as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["hizmetlerimiz"] . "/" . $this->viewData->languageJSON["routes"]["hizmet"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($services as $k => $v) :
-            if (!empty($v->url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["hizmet"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
 
         /**
          * Galleries
          */
         $galleries = $this->general_model->get_all("galleries", null, "rank ASC", ["isActive" => 1, "isCover" => 0], [], [], []);
-        foreach ($galleries as $key => $data) :
-            foreach ($data as $k => $v) :
-                if (isJson($v)) :
-                    $galleries[$key]->$k = json_decode($v);
-                else :
-                    $galleries[$key]->$k = $v;
+        if (!empty($galleries)) :
+            foreach ($galleries as $key => $data) :
+                foreach ($data as $k => $v) :
+                    if (isJson($v)) :
+                        $galleries[$key]->$k = json_decode($v);
+                    else :
+                        $galleries[$key]->$k = $v;
+                    endif;
+                endforeach;
+            endforeach;
+            foreach ($galleries as $k => $v) :
+                if (!empty($v->url->{$this->viewData->lang})) :
+                    $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["galeriler"] . "/" . $this->viewData->languageJSON["routes"]["galeri"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
                 endif;
             endforeach;
-        endforeach;
-        foreach ($galleries as $k => $v) :
-            if (!empty($v->url->{$this->viewData->lang})) :
-                $this->sitemapmodel->add(base_url($this->viewData->languageJSON["routes"]["galeri"] . "/{$v->url->{$this->viewData->lang}}"), NULL, 'always', 1);
-            endif;
-        endforeach;
+        endif;
         $this->sitemapmodel->output();
     }
 }

@@ -9,15 +9,19 @@ Author: Rs Themes
 ************************************************/
 @media screen and (min-width: 992px) {
 	.rs-menu ul ul {
-		opacity: 0;
+		opacity: 1;
 		display: block;
-		visibility: hidden;	
+		visibility: hidden;
 		transform: translateY(10px);
 	}
 
-	.rs-menu li:active > ul, .rs-menu li:focus > ul, .rs-menu li:hover > ul, .rs-menu li:hover > ul.mega-menu > li > ul, .rs-menu li:hover ul.mega-menu .sub-menu {    
-		 opacity: 1;
-		 visibility:visible;		
-		 transform: translateY(0px);
-	}	
+	.rs-menu li:active>ul,
+	.rs-menu li:focus>ul,
+	.rs-menu li:hover>ul,
+	.rs-menu li:hover>ul.mega-menu>li>ul,
+	.rs-menu li:hover ul.mega-menu .sub-menu {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0px);
+	}
 }

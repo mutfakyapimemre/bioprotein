@@ -218,6 +218,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 	<noscript>
 		<link rel="stylesheet" type="text/css" href="<?= base_url("public/css/slick.css") ?>">
 	</noscript>
+	<link rel="preload" type="text/css" href="<?= base_url("public/css/slick-theme.css") ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript>
+		<link rel="stylesheet" type="text/css" href="<?= base_url("public/css/slick-theme.css") ?>">
+	</noscript>
 	<link rel="preload" type="text/css" href="<?= base_url("public/css/rsmenu-main.css") ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 	<noscript>
 		<link rel="stylesheet" type="text/css" href="<?= base_url("public/css/rsmenu-main.css") ?>">

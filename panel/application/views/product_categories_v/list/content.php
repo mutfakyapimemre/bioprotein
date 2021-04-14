@@ -17,7 +17,7 @@
                         <button class="btn btn-sm btn-outline-danger rounded-0 " onclick="clearFilter('filter_form','productCategoryTable')" id="clear_button" data-toggle="tooltip" data-placement="top" data-title="Filtreyi Temizle" data-original-title="" title=""><i class="fa fa-eraser"></i></button>
                     </label>
                     <label for="search_button" class="mx-1">
-                        <button class="btn btn-sm btn-outline-success rounded-0 " onclick="reloadTable('productCategoryTable')" id="search_button" data-toggle="tooltip" data-placement="top" data-title="Ürün Ara"><i class="fa fa-search"></i></button>
+                        <button class="btn btn-sm btn-outline-success rounded-0 " onclick="reloadTable('productCategoryTable')" id="search_button" data-toggle="tooltip" data-placement="top" data-title="Ürün Kategorisi Ara"><i class="fa fa-search"></i></button>
                 </div>
             </form>
             <table class="table table-hover table-striped table-bordered content-container productCategoryTable">
@@ -26,6 +26,7 @@
                     <th class="order"><i class="fa fa-reorder"></i></th>
                     <th class="w50">#id</th>
                     <th>Başlık</th>
+                    <th>Üst Kategori</th>
                     <th>Durumu</th>
                     <th>Oluşturulma Tarihi</th>
                     <th>Güncelleme Tarihi</th>

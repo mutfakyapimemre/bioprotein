@@ -6,13 +6,13 @@ class Product_category_model extends CI_Model
     public function __construct()
     {
         parent::__construct();
-        $this->column_order = array('rank', 'id', 'id', 'title', 'isActive', 'createdAt', 'updatedAt', 'sharedAt');
+        $this->column_order = array('product_categories.rank', 'product_categories.id', 'product_categories.id', 'product_categories.title', 'pc.title', 'product_categories.isActive', 'product_categories.createdAt', 'updatedAt');
         // Set searchable column fields
-        $this->column_search = array('rank', 'id', 'id', 'title', 'isActive', 'createdAt', 'updatedAt', 'sharedAt');
+        $this->column_search = array('product_categories.rank', 'product_categories.id', 'product_categories.id', 'product_categories.title', 'pc.title', 'product_categories.isActive', 'product_categories.createdAt', 'product_categories.updatedAt');
         // Set default order
-        $this->order = array('rank' => 'ASC');
+        $this->order = array('product_categories.rank' => 'ASC');
     }
-    public function get_all($where = array(), $order = "id ASC")
+    public function get_all($where = array(), $order = "product_categories.id ASC")
     {
         return $this->db->where($where)->order_by($order)->get($this->tableName)->result();;
     }
@@ -49,10 +49,20 @@ class Product_category_model extends CI_Model
 
     private function _get_datatables_query($postData)
     {
-        $this->db->where(["id!=" => null]);
+        $this->db->where(["product_categories.id!=" => null]);
 
         //print_r($postData);
-
+        $this->db->select('
+        product_categories.title title,
+		product_categories.rank rank,
+		product_categories.id category_id,
+		product_categories.top_id top_id,
+        pc.title product_category,
+		product_categories.seo_url seo_url,
+		product_categories.isActive isActive,
+		product_categories.createdAt createdAt,
+        product_categories.updatedAt updatedAt',    false);
+        $this->db->join("product_categories as pc", "pc.top_id = product_categories.id", "left");
 
         $this->db->from($this->tableName);
         $i = 0;
@@ -111,7 +121,6 @@ class Product_category_model extends CI_Model
     {
 
         $this->_get_datatables_query($postData);
-
 
         $query = $this->db->where($where)->get();
 

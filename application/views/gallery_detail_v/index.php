@@ -22,115 +22,47 @@
 <!-- Gallery Section Start -->
 <div id="rs-gallery-sction" class="rs-gallery-sction3 gallery-page pt-100 pb-100">
     <div class="container">
-        <div class="row pagination-gallery gallery-slider" itemscope>
-            <div class="col-12">
-                <?php if (!empty($gallery->title->$lang)) : ?>
-                    <h4><?= $gallery->title->$lang ?></h4>
-                <?php endif ?>
-                <?= !empty($gallery->content->$lang) ? $gallery->content->$lang : null ?>
-            </div>
-            <?php foreach ($gallery_items as $key => $value) : ?>
-                <figure class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3" itemprop="associatedMedia" itemscope>
-                    <?php if ($gallery->gallery_type == "files") : ?>
-                        <a rel="dofollow" href="<?= get_picture("galleries_v/$gallery->gallery_type/$gallery->folder_name->$lang", $value->url) ?>" alt="<?= $value->title ?>" download><i class="fa fa-download fa-2x"></i></a>
-                    <?php elseif ($gallery->gallery_type == "videos") : ?>
-                        <video id="my-video<?= $key ?>" controls preload="auto" width="100%">
-                            <source src="<?= get_picture("galleries_v/$gallery->gallery_type/$gallery->folder_name->$lang", $value->url) ?>" />
-                        </video>
-                    <?php elseif ($gallery->gallery_type == "video_urls") : ?>
-                        <?= htmlspecialchars_decode($value->url) ?>
-                    <?php else : ?>
-                        <a rel="dofollow" href="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" title="<?= $languageJSON["detailPages"]["viewItem"] ?>" itemprop="contentUrl" data-size="964x1024">
-                            <picture>
-                                <img class="img-fluid" src="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" data-src="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" alt="<?= $value->title ?>" itemprop="thumbnail" style="min-height:200px;object-fit:cover">
-                            </picture>
-                            <figcaption itemprop="caption description">
-                                <small><?= $value->title ?></small>
-                                <?= $value->description ?>
-                            </figcaption>
-                        </a>
-                    <?php endif ?>
-                </figure>
-            <?php endforeach ?>
-            <?php foreach ($sectors as $key => $value) : ?>
-                <?php if (strtotime($value->sharedAt->$lang) <= strtotime("now")) : ?>
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
-                        <div class="gallery-item popup-inner">
-                            <div class="gallery-content popup-box">
-                                <picture>
-                                    <img data-src="<?= get_picture("sectors_v", $value->img_url->$lang) ?>" class="img-fluid lazyload" alt="<?= $value->title->$lang ?>" src="<?= get_picture("services_v", $value->img_url->$lang) ?>">
-                                </picture>
-                                <div class="popup-text">
-                                    <a rel="dofollow" class="image-popup" href="<?= get_picture("sectors_v", $value->img_url->$lang) ?>">
-                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                    </a>
-                                    <?php if (!empty($gallery->title->$lang)) : ?>
-                                        <h4><?= $gallery->title->$lang ?></h4>
-                                    <?php endif ?>
-                                </div>
-                            </div>
+        <div class="col-12">
+            <?php if (!empty($gallery->title->$lang)) : ?>
+                <h4><?= $gallery->title->$lang ?></h4>
+            <?php endif ?>
+            <?= !empty($gallery->content->$lang) ? $gallery->content->$lang : null ?>
+        </div>
+        <div class="row <?= ($gallery->gallery_type != "files" ? "gallery-slider" : null) ?>" <?= ($gallery->gallery_type != "files" ? "itemscope" : null) ?>>
 
-                        </div><!-- .gallery-item end -->
+            <?php foreach ($gallery_items as $key => $value) : ?>
+                <?php if ($gallery->gallery_type == "files") : ?>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                        <a href="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" alt="<?= $value->title ?>" download><i class="fa fa-download fa-2x"></i> <?= $value->url ?></a>
                     </div>
+                <?php else : ?>
+                    <figure class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4" itemprop="associatedMedia" itemscope>
+                        <?php if ($gallery->gallery_type == "videos") : ?>
+                            <video id="my-video<?= $key ?>" controls preload="auto" width="100%">
+                                <source src="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" />
+                            </video>
+                        <?php elseif ($gallery->gallery_type == "video_urls") : ?>
+                            <?= htmlspecialchars_decode($value->url) ?>
+                        <?php else : ?>
+                            <a rel="dofollow" href="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" title="<?= $languageJSON["detailPages"]["viewItem"] ?>" itemprop="contentUrl" data-size="1920x1080">
+                                <picture>
+                                    <img class="img-fluid" src="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" data-src="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" alt="<?= $value->title ?>" itemprop="thumbnail" style="min-height:200px;object-fit:cover">
+                                </picture>
+                                <figcaption itemprop="caption description">
+                                    <small><?= $value->title ?></small>
+                                    <?= $value->description ?>
+                                </figcaption>
+                            </a>
+                        <?php endif ?>
+                    </figure>
                 <?php endif ?>
             <?php endforeach ?>
+
         </div>
     </div>
 </div>
 <!-- Gallery Section End -->
 
-<!-- Project Section Start -->
-<div class="section section-padding">
-    <div class="container">
-
-        <div class="row mb-n9">
-            <div class="col-md-5 col-lg-3 mb-8 col-sm-12">
-                <div class="project-info">
-                    <ul class="mb-n1">
-                        <li><span><?= $languageJSON["detailPages"]["publishDate"] ?> :</span> <?= iconv("ISO-8859-9", "UTF-8", strftime("%d %B %Y, %A %X", strtotime($gallery->createdAt))) ?></li>
-                        <li><span><?= $languageJSON["detailPages"]["lastUpdate"] ?> :</span> <?= iconv("ISO-8859-9", "UTF-8", strftime("%d %B %Y, %A %X", strtotime($gallery->updatedAt))); ?></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-7 col-lg-9 col-sm-12 mb-8">
-                <div class="project-desc">
-                    <?php if (!empty($gallery->title->$lang)) : ?>
-                        <h4 class="title mb-6"><?= $gallery->title->$lang ?></h4>
-                    <?php endif ?>
-                    <?= !empty($gallery->content->$lang) ? $gallery->content->$lang : null ?>
-                    <div class="project-image mb-10">
-                        <div class="row gallery-slider" itemscope>
-                            <?php foreach ($gallery_items as $key => $value) : ?>
-                                <figure class="col-lg-4 col-md-6" itemprop="associatedMedia" itemscope>
-                                    <?php if ($gallery->gallery_type == "files") : ?>
-                                        <a rel="dofollow" href="<?= get_picture("galleries_v/$gallery->gallery_type/$gallery->folder_name->$lang", $value->url) ?>" alt="<?= $value->title ?>" download><i class="fa fa-download fa-2x"></i></a>
-                                    <?php elseif ($gallery->gallery_type == "videos") : ?>
-                                        <video id="my-video<?= $key ?>" controls preload="auto" width="100%">
-                                            <source src="<?= get_picture("galleries_v/$gallery->gallery_type/$gallery->folder_name->$lang", $value->url) ?>" />
-                                        </video>
-                                    <?php elseif ($gallery->gallery_type == "video_urls") : ?>
-                                        <iframe src="<?= $value->url ?>" allowfullscreen allowtransparency></iframe>
-                                    <?php else : ?>
-                                        <a rel="dofollow" href="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" title="<?= $languageJSON["detailPages"]["viewItem"] ?>" itemprop="contentUrl" data-size="964x1024">
-                                            <picture>
-                                                <img class="img-fluid" src="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" data-src="<?= get_picture("galleries_v/{$gallery->gallery_type}/{$gallery->folder_name->$lang}", $value->url) ?>" alt="<?= $value->title ?>" itemprop="thumbnail" style="min-height:200px;object-fit:cover">
-                                            </picture>
-                                            <figcaption itemprop="caption description">
-                                                <small><?= $value->title ?></small>
-                                                <?= $value->description ?>
-                                            </figcaption>
-                                        </a>
-                                    <?php endif ?>
-                                </figure>
-                            <?php endforeach ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Project Masonry Section End -->
 
 <?php if (!empty($testimonials)) : ?>
     <!-- Testimonial Start -->

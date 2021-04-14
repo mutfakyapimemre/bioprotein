@@ -40,7 +40,7 @@
 	<?php endif; ?>
 </div>
 
-<?php if (!empty($products)) : ?>
+<?php if (!empty($suggestedProducts)) : ?>
 	<!-- Products Start -->
 	<div id="rs-products" class="rs-products dark-bg section-padding">
 		<div class="container">
@@ -49,31 +49,46 @@
 					<div class="section-title text-center sec-arrow-dark">
 						<h4><?= $settings->company_name ?></h4>
 						<h2><?= $languageJSON["homepage"]["suggestedProducts"]["value"] ?></h2>
-
 					</div>
 				</div>
 			</div>
-			<div class="rs-carousel owl-carousel" data-loop="<?= (count($products) > 2 ? "true" : "false") ?>" data-items="3" data-margin="30" data-autoplay="true" data-autoplay-timeout="6000" data-smart-speed="2000" data-dots="false" data-nav="true" data-nav-speed="false" data-mobile-device="1" data-mobile-device-nav="true" data-mobile-device-dots="false" data-ipad-device="2" data-ipad-device-nav="true" data-ipad-device-dots="false" data-ipad-device2="2" data-ipad-device-nav2="true" data-ipad-device-dots2="false" data-md-device="3" data-md-device-nav="true" data-md-device-dots="false">
-				<?php foreach ($products as $key => $value) : ?>
+			<div class="rs-carousel owl-carousel" data-loop="<?= (count($suggestedProducts) > 2 ? "true" : "false") ?>" data-items="3" data-margin="30" data-autoplay="true" data-autoplay-timeout="6000" data-smart-speed="2000" data-dots="false" data-nav="true" data-nav-speed="false" data-mobile-device="1" data-mobile-device-nav="true" data-mobile-device-dots="false" data-ipad-device="2" data-ipad-device-nav="true" data-ipad-device-dots="false" data-ipad-device2="2" data-ipad-device-nav2="true" data-ipad-device-dots2="false" data-md-device="3" data-md-device-nav="true" data-md-device-dots="false">
+				<?php foreach ($suggestedProducts as $key => $value) : ?>
 					<?php if (strtotime($value->sharedAt->$lang) <= strtotime("now")) : ?>
+						<?php $imageURL = null ?>
+						<?php if (!empty($product_images)) : ?>
+							<?php foreach ($product_images as $k => $v) : ?>
+								<?php if ($v->product_id == $value->id && $v->isCover) : ?>
+									<?php $imageURL = $v->url ?>
+								<?php endif ?>
+							<?php endforeach ?>
+						<?php endif ?>
 						<div class="product-item popup-inner">
 							<div class="product-img popup-box">
+								<?php if ($value->isDiscount) : ?>
+									<span class="discount-badge">%<?= $value->discount->$lang ?></span>
+								<?php endif ?>
 								<picture>
-									<img src="<?= get_picture("products_v", $value->img_url->$lang) ?>" data-src="<?= get_picture("products_v", $value->img_url->$lang) ?>" alt="<?= $value->title->$lang ?>" class="img-fluid lazyload" style="min-height: 255px;object-fit:cover">
+									<img src="<?= get_picture("products_v", $imageURL) ?>" data-src="<?= get_picture("products_v", $imageURL) ?>" alt="<?= $value->title->$lang ?>" class="img-fluid lazyload" style="min-height: 255px;object-fit:cover;max-height:255px">
 								</picture>
 								<div class="popup-arrow">
-									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>">
+									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>">
 										<i class="fa fa-plus-circle" aria-hidden="true"></i>
 									</a>
 								</div>
 							</div>
 							<div class="product-details">
-								<h4 class="product-title"><a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $value->title->$lang ?></a></h4>
+								<h4 class="product-title"><a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $value->title->$lang ?></a></h4>
 								<div class="rating-price">
-									<span class="product-price"><?= $formatter->formatCurrency($value->price->$lang, $currency) ?></span>
+									<?php if ($value->isDiscount) : ?>
+										<span class="product-price-mark"><?= $formatter->formatCurrency($value->price->$lang, $currency) ?></span>
+										<span class="product-price"><?= $formatter->formatCurrency((($value->price->$lang) - (($value->price->$lang * $value->discount->$lang) / 100)), $currency) ?></span>
+									<?php else : ?>
+										<span class="product-price"><?= $formatter->formatCurrency($value->price->$lang, $currency) ?></span>
+									<?php endif ?>
 								</div>
 								<div class="product-btn">
-									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $languageJSON["homepage"]["viewProducts"]["value"] ?></a></a>
+									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $languageJSON["homepage"]["viewProducts"]["value"] ?></a></a>
 								</div>
 							</div>
 						</div><!-- .product-item end -->
@@ -81,7 +96,133 @@
 				<?php endforeach ?>
 			</div>
 			<div class="button-box text-center">
-				<a class="primary-btn" href="gallery.html">View More</a>
+				<a class="primary-btn" href="<?= base_url($languageJSON["routes"]["urunler"]) ?>"><?= $languageJSON["detailPages"]["viewProducts"] ?></a>
+			</div>
+		</div>
+	</div>
+	<!-- Products End -->
+<?php endif ?>
+
+<?php if (!empty($newProducts)) : ?>
+	<!-- Products Start -->
+	<div id="rs-products" class="rs-products section-padding">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title text-center">
+						<h4><?= $settings->company_name ?></h4>
+						<h2><?= $languageJSON["detailPages"]["newProducts"] ?></h2>
+					</div>
+				</div>
+			</div>
+			<div class="rs-carousel owl-carousel" data-loop="<?= (count($newProducts) > 2 ? "true" : "false") ?>" data-items="3" data-margin="30" data-autoplay="true" data-autoplay-timeout="6000" data-smart-speed="2000" data-dots="false" data-nav="true" data-nav-speed="false" data-mobile-device="1" data-mobile-device-nav="true" data-mobile-device-dots="false" data-ipad-device="2" data-ipad-device-nav="true" data-ipad-device-dots="false" data-ipad-device2="2" data-ipad-device-nav2="true" data-ipad-device-dots2="false" data-md-device="3" data-md-device-nav="true" data-md-device-dots="false">
+				<?php foreach ($newProducts as $key => $value) : ?>
+					<?php if (strtotime($value->sharedAt->$lang) <= strtotime("now")) : ?>
+						<?php $imageURL = null ?>
+						<?php if (!empty($product_images)) : ?>
+							<?php foreach ($product_images as $k => $v) : ?>
+								<?php if ($v->product_id == $value->id && $v->isCover) : ?>
+									<?php $imageURL = $v->url ?>
+								<?php endif ?>
+							<?php endforeach ?>
+						<?php endif ?>
+						<div class="product-item popup-inner">
+							<div class="product-img popup-box">
+								<?php if ($value->isDiscount) : ?>
+									<span class="discount-badge">%<?= $value->discount->$lang ?></span>
+								<?php endif ?>
+								<picture>
+									<img src="<?= get_picture("products_v", $imageURL) ?>" data-src="<?= get_picture("products_v", $imageURL) ?>" alt="<?= $value->title->$lang ?>" class="img-fluid lazyload" style="min-height: 255px;object-fit:cover;max-height:255px">
+								</picture>
+								<div class="popup-arrow">
+									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>">
+										<i class="fa fa-plus-circle" aria-hidden="true"></i>
+									</a>
+								</div>
+							</div>
+							<div class="product-details">
+								<h4 class="product-title"><a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $value->title->$lang ?></a></h4>
+								<div class="rating-price">
+									<?php if ($value->isDiscount) : ?>
+										<span class="product-price-mark"><?= $formatter->formatCurrency($value->price->$lang, $currency) ?></span>
+										<span class="product-price"><?= $formatter->formatCurrency((($value->price->$lang) - (($value->price->$lang * $value->discount->$lang) / 100)), $currency) ?></span>
+									<?php else : ?>
+										<span class="product-price"><?= $formatter->formatCurrency($value->price->$lang, $currency) ?></span>
+									<?php endif ?>
+								</div>
+								<div class="product-btn">
+									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $languageJSON["homepage"]["viewProducts"]["value"] ?></a></a>
+								</div>
+							</div>
+						</div><!-- .product-item end -->
+					<?php endif ?>
+				<?php endforeach ?>
+			</div>
+			<div class="button-box text-center">
+				<a class="primary-btn" href="<?= base_url($languageJSON["routes"]["urunler"]) ?>"><?= $languageJSON["detailPages"]["viewProducts"] ?></a>
+			</div>
+		</div>
+	</div>
+	<!-- Products End -->
+<?php endif ?>
+
+<?php if (!empty($discountProducts)) : ?>
+	<!-- Products Start -->
+	<div id="rs-products" class="rs-products dark-bg section-padding">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title text-center">
+						<h4><?= $settings->company_name ?></h4>
+						<h2><?= $languageJSON["detailPages"]["discountProducts"] ?></h2>
+					</div>
+				</div>
+			</div>
+			<div class="rs-carousel owl-carousel" data-loop="<?= (count($discountProducts) > 2 ? "true" : "false") ?>" data-items="3" data-margin="30" data-autoplay="true" data-autoplay-timeout="6000" data-smart-speed="2000" data-dots="false" data-nav="true" data-nav-speed="false" data-mobile-device="1" data-mobile-device-nav="true" data-mobile-device-dots="false" data-ipad-device="2" data-ipad-device-nav="true" data-ipad-device-dots="false" data-ipad-device2="2" data-ipad-device-nav2="true" data-ipad-device-dots2="false" data-md-device="3" data-md-device-nav="true" data-md-device-dots="false">
+				<?php foreach ($discountProducts as $key => $value) : ?>
+					<?php if (strtotime($value->sharedAt->$lang) <= strtotime("now")) : ?>
+						<?php $imageURL = null ?>
+						<?php if (!empty($product_images)) : ?>
+							<?php foreach ($product_images as $k => $v) : ?>
+								<?php if ($v->product_id == $value->id && $v->isCover) : ?>
+									<?php $imageURL = $v->url ?>
+								<?php endif ?>
+							<?php endforeach ?>
+						<?php endif ?>
+						<div class="product-item popup-inner">
+							<div class="product-img popup-box">
+								<?php if ($value->isDiscount) : ?>
+									<span class="discount-badge">%<?= $value->discount->$lang ?></span>
+								<?php endif ?>
+								<picture>
+									<img src="<?= get_picture("products_v", $imageURL) ?>" data-src="<?= get_picture("products_v", $imageURL) ?>" alt="<?= $value->title->$lang ?>" class="img-fluid lazyload" style="min-height: 255px;object-fit:cover;max-height:255px">
+								</picture>
+								<div class="popup-arrow">
+									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>">
+										<i class="fa fa-plus-circle" aria-hidden="true"></i>
+									</a>
+								</div>
+							</div>
+							<div class="product-details">
+								<h4 class="product-title"><a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $value->title->$lang ?></a></h4>
+								<div class="rating-price">
+									<?php if ($value->isDiscount) : ?>
+										<span class="product-price-mark"><?= $formatter->formatCurrency($value->price->$lang, $currency) ?></span>
+										<span class="product-price"><?= $formatter->formatCurrency((($value->price->$lang) - (($value->price->$lang * $value->discount->$lang) / 100)), $currency) ?></span>
+									<?php else : ?>
+										<span class="product-price"><?= $formatter->formatCurrency($value->price->$lang, $currency) ?></span>
+									<?php endif ?>
+								</div>
+								<div class="product-btn">
+									<a rel="dofollow" href="<?= base_url($languageJSON["routes"]["urunler"] . "/" . $languageJSON["routes"]["urun"] . "/{$value->url->$lang}") ?>" title="<?= $value->title->$lang ?>"><?= $languageJSON["homepage"]["viewProducts"]["value"] ?></a></a>
+								</div>
+							</div>
+						</div><!-- .product-item end -->
+					<?php endif ?>
+				<?php endforeach ?>
+			</div>
+			<div class="button-box text-center">
+				<a class="primary-btn" href="<?= base_url($languageJSON["routes"]["urunler"]) ?>"><?= $languageJSON["detailPages"]["viewProducts"] ?></a>
 			</div>
 		</div>
 	</div>
@@ -141,7 +282,6 @@
 </div>
 <!-- About Us End -->
 
-
 <?php if (!empty($services)) : ?>
 	<!--  What We Do Start -->
 	<div class="rs-what-wedo section-padding dark-bg">
@@ -183,7 +323,6 @@
 	</div>
 	<!--  What We Do End -->
 <?php endif ?>
-
 
 <?php if (!empty($news)) : ?>
 	<!-- RS Blog Start -->
@@ -275,35 +414,6 @@
 	</div>
 	<!-- Testimonial End -->
 <?php endif ?>
-
-<!-- Gallery Section Start -->
-<div id="rs-gallery-sction" class="rs-gallery-sction section-padding bg2">
-	<div class="container">
-		<div class="section-title white-text text-center sec-arrow-dark">
-			<h4>Gallery</h4>
-			<h2>Our Gallery View</h2>
-		</div>
-		<div class="row">
-			<div class="col-lg-4 col-md-6">
-				<div class="gallery-item popup-inner">
-					<div class="blog-img popup-box">
-						<img src="images/gallery/1.jpg" alt="" />
-						<div class="popup-arrow">
-							<a class="image-popup" href="images/gallery/1.jpg">
-								<i class="fa fa-plus-circle" aria-hidden="true"></i>
-							</a>
-						</div>
-					</div>
-				</div><!-- .gallery-item end -->
-			</div>
-			<div class="button-box text-center">
-				<a class="primary-btn" href="gallery.html">View More</a>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- Gallery Section End -->
-
 
 <?php if (!empty($brands)) : ?>
 	<!-- Client Logo Section Start Here-->

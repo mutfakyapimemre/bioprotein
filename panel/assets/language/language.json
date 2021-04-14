@@ -57,8 +57,8 @@
             "value": "Hizmeti İncele"
         },
         "suggestedProducts": {
-            "top": "Ürünler",
-            "value": "Ürünler"
+            "top": "Öne Çıkan Ürünler",
+            "value": "Öne Çıkan Ürünler"
         },
         "viewProducts": {
             "top": "Ürünü İncele",
@@ -327,8 +327,10 @@
     },
     "detailPages": {
         "sectors": "SEKTÖRLER",
+        "products": "ÜRÜNLER",
         "viewService": "Hizmeti İncele",
         "viewProduct": "Ürünü İncele",
+        "viewProducts": "Tüm Ürünler",
         "viewNews": "Haberi İncele",
         "viewGallery": "Galeriyi İncele",
         "viewItem": "İNCELE",
@@ -342,7 +344,17 @@
         "latestNews": "Yeni Haberler",
         "randomNews": "Rastgele Haberler",
         "searchServices": "Hizmet Ara",
-        "latestServices": "Yeni Hizmetlerimiz"
+        "latestServices": "Yeni Hizmetlerimiz",
+        "searchProduct": "Ürün Ara",
+        "latestCategoryProducts": "Bu Kategoriden Yeni Ürünler",
+        "latestProducts": "Yeni Ürünler",
+        "productCategories": "Ürün Kategorileri",
+        "productDescription": "Ürün Açıklaması",
+        "suggestedProducts": "Öne Çıkan Ürünler",
+        "newProducts": "Yeni Ürünler",
+        "discountProducts": "İndirimli Ürünler",
+        "productPrice": "Ürün Fiyatı:",
+        "externalURL": "Satın Al"
     },
     "routes": {
         "anasayfa": "anasayfa",

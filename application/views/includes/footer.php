@@ -207,9 +207,9 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="search-block clearfix">
-				<form>
+				<form action="<?= base_url($languageJSON["routes"]["urunler"]) ?>" method="GET" enctype="multipart/form-data">
 					<div class="form-group">
-						<input class="form-control" placeholder="Type Your Keyword..." type="text">
+						<input class="form-control" placeholder="<?= $languageJSON["detailPages"]["searchProduct"] ?>..." type="text" name="search">
 					</div>
 				</form>
 			</div>
@@ -255,7 +255,7 @@
 <script async defer src="<?= base_url("public/js/timetable.js"); ?>"></script>
 <script async defer src="<?= base_url("public/js/jquery.nav.js"); ?>"></script>
 <script src="<?= base_url("public/js/owl.carousel.min.js"); ?>"></script>
-<script async defer src="<?= base_url("public/js/slick.min.js"); ?>"></script>
+<script src="<?= base_url("public/js/slick.min.js"); ?>"></script>
 <script async defer src="<?= base_url("public/js/isotope.pkgd.min.js"); ?>"></script>
 <script async defer src="<?= base_url("public/js/imagesloaded.pkgd.min.js"); ?>"></script>
 <script src="<?= base_url("public/js/wow.min.js"); ?>"></script>

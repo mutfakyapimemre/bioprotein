@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                             <?php if ($item->gallery_type != "video_urls") : ?>
-                                <form data-table="detailTable" action="<?= base_url("galleries/file_upload/$item->id/$item->gallery_type/$lang"); ?>" id="dropzone<?=$lang?>" class="dropzone" data-plugin="dropzone" data-options="{ url: '<?= base_url("galleries/file_upload/$item->id/$item->gallery_type/$lang"); ?>'}">
+                                <form data-table="detailTable" action="<?= base_url("galleries/file_upload/$item->id/$item->gallery_type/$lang"); ?>" id="dropzone<?= $lang ?>" class="dropzone" data-plugin="dropzone" data-options="{ url: '<?= base_url("galleries/file_upload/$item->id/$item->gallery_type/$lang"); ?>'}">
                                     <div class="dz-message">
                                         <h3 class="m-h-lg">Yüklemek istediğiniz dosyaları buraya sürükleyiniz</h3>
                                         <p class="mb-3 text-muted">(Yüklemek için dosyalarınızı sürükleyiniz yada buraya tıklayınız)</p>
@@ -25,7 +25,7 @@
                                 <form id="createGalleryItem" onsubmit="return false" method="POST" enctype="multipart/form-data">
                                     <div class="form-group">
                                         <label>Video URL (Embed)</label>
-                                        <input type="text" name="url" class="form-control form-control-sm rounded-0" required>
+                                        <input type="text" name="url[<?= $lang ?>]" class="form-control form-control-sm rounded-0" required>
                                     </div>
                                     <div class="form-group">
                                         <button data-url="<?= base_url("galleries/file_upload/$item->id/$item->gallery_type/$lang"); ?>" class="btn btn-sm btn-outline-primary rounded-0 btnSave">Videoyu Kaydet</button>
@@ -41,7 +41,7 @@
     <div class="row">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
             <h4 class="my-3">
-                <b><?= json_encode($item->title,JSON_UNESCAPED_UNICODE); ?></b> kaydına ait Dosyalar
+                <b><?= json_encode($item->title, JSON_UNESCAPED_UNICODE); ?></b> kaydına ait Dosyalar
                 <?php if ($item->gallery_type == "video_url") : ?>
                     <a href="javascript:void(0)" class="btn btn-sm btn-outline-info float-right rounded-0 createVideoUrlBtn"><i class="fa fa-plus"></i> Yeni Ekle</a>
                 <?php endif; ?>
@@ -108,7 +108,7 @@
                 $.post(url, {}, function(response) {
                     $("#fileModal .iziModal-content").html(response);
                     TinyMCEInit();
-					flatPickrInit();
+                    flatPickrInit();
                 });
             });
             openModal("#fileModal");
@@ -132,7 +132,7 @@
                 $.post(url, {}, function(response) {
                     $("#fileModal .iziModal-content").html(response);
                     TinyMCEInit();
-					flatPickrInit();
+                    flatPickrInit();
                 });
             });
             openModal("#fileModal");

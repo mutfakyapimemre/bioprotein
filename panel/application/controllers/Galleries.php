@@ -98,29 +98,34 @@ class Galleries extends MY_Controller
             $folder_name = null;
             $url = null;
             $imgUrl = null;
-            foreach ($_FILES["img_url"]["name"] as $key => $value) :
-                if ($value == "") :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
-                $path         = FCPATH . "uploads/$this->viewFolder/";
-                $folder_name[$key] = seo($data["title"][$key]);
-                $path = "$path/$gallery_type/" . $folder_name[$key];
-                if (!@mkdir($path, 0755, true)) :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Oluşturulurken Hata Oluştu. Klasör Erişim Yetkinizin Olduğundan Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
+            if (!empty($_FILES)) :
+                foreach ($_FILES["img_url"]["name"] as $key => $value) :
+                    if ($value == "") :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                    $path         = FCPATH . "uploads/$this->viewFolder/";
+                    $folder_name[$key] = seo($data["title"][$key]);
+                    $path = "$path/$gallery_type/" . $folder_name[$key];
+                    if (!@mkdir($path, 0755, true)) :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Oluşturulurken Hata Oluştu. Klasör Erişim Yetkinizin Olduğundan Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
 
-                $image = upload_picture("img_url", "uploads/$this->viewFolder/$gallery_type/$folder_name[$key]", $key);
+                    $image = upload_picture("img_url", "uploads/$this->viewFolder/$gallery_type/$folder_name[$key]", $key);
 
-                if ($image["success"]) :
-                    $url[$key] =  seo($data["title"][$key]);
-                    $imgUrl[$key] = $image["file_name"];
-                else :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
-            endforeach;
+                    if ($image["success"]) :
+                        $url[$key] =  seo($data["title"][$key]);
+                        $imgUrl[$key] = $image["file_name"];
+                    else :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                endforeach;
+            else :
+                echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                die();
+            endif;
             $gallery_type = $data["gallery_type"];
             $data = makeJSON($data);
             $data["folder_name"] = json_encode($folder_name);
@@ -457,7 +462,7 @@ class Galleries extends MY_Controller
                     echo $image["error"];
                 endif;
             else :
-                $image = upload_picture("file", "uploads/$this->viewFolder/videos/{$gallery->folder_name[$lang]}/", null, "*");
+                $image = upload_picture("file", "uploads/$this->viewFolder/files/{$gallery->folder_name[$lang]}/", null, "*");
                 if ($image["success"]) :
                     $getRank = $this->file_model->rowCount();
                     $this->file_model->add(
@@ -474,7 +479,7 @@ class Galleries extends MY_Controller
                 endif;
             endif;
         else :
-            $data = rClean($this->input->post());
+            $data = $this->input->post();
             if (checkEmpty($data)["error"]) :
                 $key = checkEmpty($data)["key"];
                 echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Galeri İçeriği Kayıt Edilirken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);

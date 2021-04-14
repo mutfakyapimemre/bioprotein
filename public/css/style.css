@@ -890,10 +890,6 @@ button {
   box-shadow: 0 0 5px #aaa;
 }
 
-.rs-header.rs-defult-header .menu-area .rs-menu {
-  padding-right: 103px;
-}
-
 .rs-header.rs-defult-header .menu-area .rs-menu>ul>li>a {
   color: #fff;
 }
@@ -928,12 +924,8 @@ button {
 }
 
 .rs-header .menu-area .mainmenu-area {
-  float: right;
+  float: left;
   position: relative;
-}
-
-.rs-header .menu-area .rs-menu {
-  padding-right: 78px;
 }
 
 .rs-header .menu-area .rs-menu li.active>a {
@@ -989,25 +981,10 @@ button {
   right: 0;
 }
 
-.rs-header .cart-area {
-  z-index: 2;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
-}
-
-.rs-header .cart-area2 {
-  position: absolute;
-  right: 80px;
-  top: 50%;
-  transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
+.rs-search {
+  width: 30px;
+  height: 30px;
+  padding: 20px 0 20px 20px;
 }
 
 .rs-header .cart-area a {
@@ -2760,6 +2737,18 @@ button {
   color: #fff;
 }
 
+.discount-badge {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: #ea4c23;
+  border-radius: 100%;
+  padding: 10px;
+  color: #fff;
+  font-weight: 800;
+  z-index: 1;
+}
+
 /* ------------------------------------
     15. Sidebar Area
 ---------------------------------------*/
@@ -2875,6 +2864,15 @@ button {
 .sidebar-area .latest-courses .post-item .post-desc .date {
   font-weight: 600;
   font-size: 14px;
+}
+
+.admin {
+  color: #ea4c23;
+}
+
+.admin-mark {
+  color: #272727;
+  text-decoration: line-through;
 }
 
 .sidebar-area .latest-courses .post-item+.post-item {
@@ -3046,7 +3044,7 @@ button {
 }
 
 .rs-gallery-sction3 .gallery-content .popup-text {
-  z-index: 11;
+  z-index: 1;
   position: absolute;
   left: 0;
   width: 100%;
@@ -4856,9 +4854,27 @@ button {
 }
 
 .rs-products .product-item .product-details .rating-price .product-price {
-  display: block;
-  font-weight: 600;
+  font-weight: 700;
   color: #ea4c23;
+}
+
+.rs-products .product-item .product-details .rating-price .product-price-mark {
+  text-decoration: line-through;
+  font-weight: 600;
+  color: #272727;
+  margin-right: 5px;
+}
+
+.product-price {
+  font-weight: 700;
+  color: #ea4c23;
+}
+
+.product-price-mark {
+  text-decoration: line-through;
+  font-weight: 600;
+  color: #272727;
+  margin-right: 5px;
 }
 
 .rs-products .product-item .product-btn {
@@ -4885,6 +4901,30 @@ button {
   background: #101010;
 }
 
+.product-btn {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.product-btn a {
+  display: inline-block;
+  margin-left: auto;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  background: #ea4c23;
+  border-radius: 30px;
+  height: 45px;
+  line-height: 45px;
+  padding: 0 24px;
+  text-transform: uppercase;
+}
+
+.product-btn a:hover {
+  color: #ea4c23;
+  background: #101010;
+}
+
 .shop-page .product-item {
   margin-bottom: 30px;
 }
@@ -4904,7 +4944,6 @@ button {
 }
 
 .shop-single-page-area .inner-single-product-slider .single-product-nav {
-  max-width: 300px;
   margin: 0 auto;
 }
 
@@ -5633,7 +5672,7 @@ button {
 
 .rs-footer .footer-top-section .sitemap-widget li {
   display: inline-block;
-  padding-right: 34px;
+  padding-right: 7px;
 }
 
 .rs-footer .footer-top-section .sitemap-widget li:last-child {
@@ -5905,7 +5944,7 @@ button {
 .rs-header .menu-area.sticky {
   position: fixed;
   width: 100%;
-  z-index: 999;
+  z-index: 2;
   top: 0;
   background: #fff;
 }

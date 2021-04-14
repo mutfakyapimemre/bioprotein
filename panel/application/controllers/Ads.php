@@ -88,19 +88,24 @@ class Ads extends MY_Controller
             echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Reklam Kaydı Yapılırken Hata Oluştu. \"{$key}\" Bilgisini Doldurduğunuzdan Emin Olup Tekrar Deneyin."]);
         else :
             $getRank = $this->ad_model->rowCount();
-            foreach ($_FILES["img_url"]["name"] as $key => $value) :
-                if ($value == "") :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Reklam Eklenirken Hata Oluştu. Reklam Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
-                    die();
-                endif;
-                $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
-                if ($image["success"]) :
-                    $data["img_url"][$key] = $image["file_name"];
-                else :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Reklam Kaydı Yapılırken Hata Oluştu. Reklam Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
-            endforeach;
+            if (!empty($_FILES)) :
+                foreach ($_FILES["img_url"]["name"] as $key => $value) :
+                    if ($value == "") :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Reklam Eklenirken Hata Oluştu. Reklam Görseli Seçtiğinizden Emin Olup, Lütfen Tekrar Deneyin."]);
+                        die();
+                    endif;
+                    $image = upload_picture("img_url", "uploads/$this->viewFolder", $key);
+                    if ($image["success"]) :
+                        $data["img_url"][$key] = $image["file_name"];
+                    else :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Reklam Kaydı Yapılırken Hata Oluştu. Reklam Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                endforeach;
+            else :
+                echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Reklam Kaydı Yapılırken Hata Oluştu. Reklam Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                die();
+            endif;
             $data = makeJSON($data);
             $data["isActive"] = 1;
             $data["rank"] = $getRank + 1;

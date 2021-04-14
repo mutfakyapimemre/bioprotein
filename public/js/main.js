@@ -185,7 +185,7 @@ $( window ).on( 'load', function () {
 	var singleproductnav = $( '.single-product-nav' );
 	if ( singleproductnav.length ) {
 		$( '.single-product-nav' ).slick( {
-			slidesToShow: 2,
+			slidesToShow: 3,
 			slidesToScroll: 1,
 			asNavFor: '.single-product',
 			dots: false,

@@ -19,10 +19,21 @@
                         <label>Dış URL</label>
                         <input class="form-control form-control-sm rounded-0" placeholder="Dış URL [Dil : <?= $value->lang ?>]" name="external_url[<?= $value->lang ?>]" required>
                     </div>
-                    <div class="form-group">
-                        <label>Fiyat</label>
-                        <input class="form-control form-control-sm rounded-0" placeholder="Fiyat [Dil : <?= $value->lang ?>]" name="price[<?= $value->lang ?>]" required>
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="form-group">
+                                <label>Fiyat</label>
+                                <input class="form-control form-control-sm rounded-0" placeholder="Fiyat [Dil : <?= $value->lang ?>]" name="price[<?= $value->lang ?>]" required min="0">
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="form-group">
+                                <label>İndirim Oranı (%)</label>
+                                <input class="form-control form-control-sm rounded-0" type="number" placeholder="İndirim Oranı (%) [Dil : <?= $value->lang ?>]" name="discount[<?= $value->lang ?>]" required min="0" max="100">
+                            </div>
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label>Açıklama</label>
                         <textarea name="content[<?= $value->lang ?>]" class="m-0 tinymce" required></textarea>
@@ -36,7 +47,7 @@
         </div>
         <div class="form-group">
             <label>Ürün Kategorisi</label>
-            <select class="form-control form-control-sm rounded-0 tagsInput" multiple name="category_id[]" required>
+            <select class="rounded-0 tagsInput" multiple name="category_id[]" required>
                 <option value="">Ürün Kategorisi Seçiniz.</option>
                 <?php foreach ($categories as $category) : ?>
                     <option value="<?= $category->id; ?>"><?= $category->title; ?></option>

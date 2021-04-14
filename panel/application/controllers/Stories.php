@@ -92,28 +92,33 @@ class Stories extends MY_Controller
             $getRank = $this->story_model->rowCount();
             $folder_name = null;
             $imgUrl = null;
-            foreach ($_FILES["img_url"]["name"] as $key => $value) :
-                if ($value == "") :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
-                $path         = FCPATH . "uploads/$this->viewFolder/";
-                $folder_name[$key] = seo($data["title"][$key]);
-                $path = "$path/" . $folder_name[$key];
-                if (!@mkdir($path, 0755, true)) :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Oluşturulurken Hata Oluştu. Klasör Erişim Yetkinizin Olduğundan Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
+            if (!empty($_FILES)) :
+                foreach ($_FILES["img_url"]["name"] as $key => $value) :
+                    if ($value == "") :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                    $path         = FCPATH . "uploads/$this->viewFolder/";
+                    $folder_name[$key] = seo($data["title"][$key]);
+                    $path = "$path/" . $folder_name[$key];
+                    if (!@mkdir($path, 0755, true)) :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Oluşturulurken Hata Oluştu. Klasör Erişim Yetkinizin Olduğundan Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
 
-                $image = upload_picture("img_url", "uploads/$this->viewFolder/$folder_name[$key]", $key);
+                    $image = upload_picture("img_url", "uploads/$this->viewFolder/$folder_name[$key]", $key);
 
-                if ($image["success"]) :
-                    $imgUrl[$key] = $image["file_name"];
-                else :
-                    echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
-                    die();
-                endif;
-            endforeach;
+                    if ($image["success"]) :
+                        $imgUrl[$key] = $image["file_name"];
+                    else :
+                        echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                        die();
+                    endif;
+                endforeach;
+            else :
+                echo json_encode(["success" => false, "title" => "Başarısız!", "message" => "Hikaye Kaydı Yapılırken Hata Oluştu. Kapak Görseli Seçtiğinizden Emin Olup Tekrar Deneyin."]);
+                die();
+            endif;
             $data = makeJSON($data);
             $data["folder_name"] = json_encode($folder_name);
             $data["img_url"] = json_encode($imgUrl);
@@ -284,7 +289,7 @@ class Stories extends MY_Controller
                     endif;
                 endif;
             endforeach;
-            $data[] = array($item->rank, '<i class="fa fa-arrows" data-id="' . $item->id . '"></i>', $item->id, $image, $item->src,$item->lang, $checkbox, turkishDate("d F Y, l H:i:s", $item->createdAt), turkishDate("d F Y, l H:i:s", $item->updatedAt), turkishDate("d F Y, l H:i:s", $item->sharedAt), $proccessing);
+            $data[] = array($item->rank, '<i class="fa fa-arrows" data-id="' . $item->id . '"></i>', $item->id, $image, $item->src, $item->lang, $checkbox, turkishDate("d F Y, l H:i:s", $item->createdAt), turkishDate("d F Y, l H:i:s", $item->updatedAt), turkishDate("d F Y, l H:i:s", $item->sharedAt), $proccessing);
 
         endforeach;
 

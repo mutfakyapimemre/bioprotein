@@ -24,7 +24,7 @@
 <!-- Contact Page Start -->
 <div class="contact-page-section sec-spacer">
     <div class="container">
-        <div class="conatact-page" id="googleMap"><?= htmlspecialchars_decode($settings->map) ?></div>
+        <div class="conatact-page mb-3"><?= htmlspecialchars_decode($settings->map) ?></div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="row contact-info practical-information">
@@ -110,7 +110,7 @@
                                     <div class="col-12 mb-3">
                                         <textarea class="form-control" name="comment" data-aos="fade-up" data-aos-delay="600"></textarea>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12 text-center justify-content-center">
                                         <button type="button" data-aos="fade-up" data-aos-delay="700" data-url="<?= base_url($languageJSON["routes"]["iletisim-formu"]) ?>" class="primary-btn btnSubmitForm"><?= $languageJSON["contactForm"]["submit"]["value"] ?> <i class="fa fa-arrow-right"></i></button>
                                     </div>
                                 </div>
