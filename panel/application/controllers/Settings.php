@@ -218,8 +218,12 @@ class Settings extends MY_Controller
     {
         $item = $this->general_model->get("settings", null, ["id" => $id]);
         $data = $this->input->post();
+        unset($data["routes"]["0"]);
+        $data["routes"]["sitemap.xml"] = "sitemap.xml";
+        $data["routes"]["sitemapindex.xml"] = "sitemapindex.xml";
+        $data = json_encode($data, JSON_UNESCAPED_UNICODE);
         $create = fopen(FCPATH . "assets/language/" . $item->lang . ".json", "w");
-        $create = fwrite($create, json_encode($data, JSON_UNESCAPED_UNICODE));
+        $create = fwrite($create, $data);
         if ($create) :
             echo json_encode(["success" => true, "title" => "Başarılı!", "message" => "Dil Sabitleri Başarıyla Güncelleştirildi."]);
         else :

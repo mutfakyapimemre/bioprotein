@@ -1,4 +1,4 @@
-<?php defined('BASEPATH') or exit('No direct script access allowed');?>
+<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <div class="container-fluid mt-xl-50 mt-lg-30 mt-15 bg-white p-3">
     <div class="row">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
@@ -59,72 +59,72 @@
 <div id="settingsModal"></div>
 
 <script>
-    $(document).ready(function(){
-        $(document).on("click",".createSettingsBtn",function(e){
+    $(document).ready(function() {
+        $(document).on("click", ".createSettingsBtn", function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             let url = $(this).data("url");
             $('#settingsModal').iziModal('destroy');
-            createModal("#settingsModal","Yeni Ayar Ekle","Yeni Ayar Ekle",600,true,"20px",0,"#e20e17","#fff",1040,function(){
-                $.post(url,{},function(response){
+            createModal("#settingsModal", "Yeni Ayar Ekle", "Yeni Ayar Ekle", 600, true, "20px", 0, "#e20e17", "#fff", 1040, function() {
+                $.post(url, {}, function(response) {
                     $("#settingsModal .iziModal-content").html(response);
                     TinyMCEInit();
                 });
             });
             openModal("#settingsModal");
         });
-        $(document).on("click",".btnSave",function(e){
+        $(document).on("click", ".btnSave", function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             let url = $(this).data("url");
             let formData = new FormData(document.getElementById("createSettings"));
-            createAjax(url,formData,function(){
+            createAjax(url, formData, function() {
                 closeModal("#settingsModal");
                 reloadTable("settingsTable");
             });
         });
-        $(document).on("click",".updateSettingsBtn",function(e){
+        $(document).on("click", ".updateSettingsBtn", function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             $('#settingsModal').iziModal('destroy');
             let url = $(this).data("url");
-            createModal("#settingsModal","Ayar Düzenle","Ayar Düzenle",600,true,"20px",0,"#e20e17","#fff",1040,function(){
-                $.post(url,{},function(response){
+            createModal("#settingsModal", "Ayar Düzenle", "Ayar Düzenle", 600, true, "20px", 0, "#e20e17", "#fff", 1040, function() {
+                $.post(url, {}, function(response) {
                     $("#settingsModal .iziModal-content").html(response);
                     TinyMCEInit();
                 });
             });
             openModal("#settingsModal");
         });
-        $(document).on("click",".btnUpdate",function(e){
+        $(document).on("click", ".btnUpdate", function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             let url = $(this).data("url");
             let formData = new FormData(document.getElementById("updateSettings"));
-            createAjax(url,formData,function(){
+            createAjax(url, formData, function() {
                 closeModal("#settingsModal");
                 reloadTable("settingsTable");
             });
         });
-        $(document).on("click",".updateSettingsJsonbtn",function(e){
+        $(document).on("click", ".updateSettingsJsonbtn", function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             $('#settingsModal').iziModal('destroy');
             let url = $(this).data("url");
-            createModal("#settingsModal","Dil Sabitlerini Düzenle","Dil Sabitlerini Düzenle",600,true,"20px",0,"#e20e17","#fff",1040,function(){
-                $.post(url,{},function(response){
+            createModal("#settingsModal", "Dil Sabitlerini Düzenle", "Dil Sabitlerini Düzenle", 600, true, "20px", 0, "#e20e17", "#fff", 1040, function() {
+                $.post(url, {}, function(response) {
                     $("#settingsModal .iziModal-content").html(response);
                     TinyMCEInit();
                 });
             });
             openModal("#settingsModal");
         });
-        $(document).on("click",".btnUpdateJson",function(e){
+        $(document).on("click", ".btnUpdateJson", function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             let url = $(this).data("url");
             let formData = new FormData(document.getElementById("updateJson"));
-            createAjax(url,formData,function(){
+            createAjax(url, formData, function() {
                 closeModal("#settingsModal");
                 reloadTable("settingsTable");
             });
