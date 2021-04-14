@@ -167,7 +167,7 @@ class Settings extends MY_Controller
                     $image = upload_picture("mobile_logo", "uploads/$this->viewFolder");
                     if ($image["success"]) :
                         $data["mobile_logo"] = $image["file_name"];
-                        if (!is_dir(FCPATH . "uploads/{$this->viewFolder}/{$settings_mobile_logo}") && file_exists(FCPATH . "uploads/{$this->viewFolder}/{$settings->mobile_logo}")) :
+                        if (!is_dir(FCPATH . "uploads/{$this->viewFolder}/{$settings->mobile_logo}") && file_exists(FCPATH . "uploads/{$this->viewFolder}/{$settings->mobile_logo}")) :
                             unlink(FCPATH . "uploads/{$this->viewFolder}/{$settings->mobile_logo}");
                         endif;
                     else :
